@@ -1,0 +1,16 @@
+[submodule "lib/cJSON"]
+	path = lib/cJSON
+	url = https://github.com/DaveGamble/cJSON.git
+	branch = master
+[submodule "lib/cmark"]
+	path = lib/cmark
+	url = https://github.com/commonmark/cmark.git
+[submodule "lib/lvgl"]
+	path = lib/lvgl
+	url = https://github.com/pvginkel/lvgl.git
+[submodule "tools/windows_simulator"]
+	path = tools/windows_simulator
+	url = https://github.com/pvginkel/lv_port_pc_visual_studio.git
+[submodule "lib/libbacktrace"]
+	path = lib/libbacktrace
+	url = https://github.com/ianlancetaylor/libbacktrace.git

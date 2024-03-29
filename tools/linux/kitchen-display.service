@@ -1,0 +1,13 @@
+[Unit]
+Description=Kitchen Display
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+EnvironmentFile=/etc/environment
+ExecStart=/opt/KitchenDisplay/scripts/run.sh
+
+[Install]
+WantedBy=multi-user.target
+
