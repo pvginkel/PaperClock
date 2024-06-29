@@ -1,13 +1,6 @@
 #pragma once
 
-template <typename T>
-using icu_result = result<T, UErrorCode>;
-
 string strformat(const char* fmt, ...);
-string sha1(const string& input);
-icu_result<string> icu_normalize(const string& input);
-icu_result<string> icu_simplify(const string& input);
-string icu_lower(const string& input);
 
 template <typename Result>
 static Result with_mutex(mutex& mutex, function<Result()> func) {
@@ -45,43 +38,4 @@ public:
     }
 
     cJSON* operator*() const { return _data; }
-};
-
-class curl_session {
-    CURL* _session;
-
-public:
-    curl_session(CURL* session) : _session(session) {}
-    curl_session(const curl_session& other) = delete;
-    curl_session(curl_session&& other) noexcept = delete;
-    curl_session& operator=(const curl_session& other) = delete;
-    curl_session& operator=(curl_session&& other) noexcept = delete;
-
-    ~curl_session() {
-        if (_session) {
-            curl_easy_cleanup(_session);
-        }
-    }
-
-    CURL* operator*() const { return _session; }
-};
-
-template <typename T>
-class curl_data {
-    T _data;
-
-public:
-    curl_data(T session) : _data(session) {}
-    curl_data(const curl_data& other) = delete;
-    curl_data(curl_data&& other) noexcept = delete;
-    curl_data& operator=(const curl_data& other) = delete;
-    curl_data& operator=(curl_data&& other) noexcept = delete;
-
-    ~curl_data() {
-        if (_data) {
-            curl_free(_data);
-        }
-    }
-
-    T operator*() const { return _data; }
 };

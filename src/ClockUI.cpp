@@ -20,14 +20,14 @@ void ClockUI::do_begin() {
     _font_s = lv_freetype_font_create("../../fonts/Roboto-Regular.ttf", LV_FREETYPE_FONT_RENDER_MODE_BITMAP, 110,
                                       LV_FREETYPE_FONT_STYLE_NORMAL);
     _font_xs = lv_freetype_font_create("../../fonts/Roboto-Regular.ttf", LV_FREETYPE_FONT_RENDER_MODE_BITMAP, 90,
-                                      LV_FREETYPE_FONT_STYLE_NORMAL);
+                                       LV_FREETYPE_FONT_STYLE_NORMAL);
 
     _font_l_mdi = lv_freetype_font_create("../../fonts/materialdesignicons-webfont.ttf",
                                           LV_FREETYPE_FONT_RENDER_MODE_BITMAP, 220, LV_FREETYPE_FONT_STYLE_NORMAL);
     _font_m_mdi = lv_freetype_font_create("../../fonts/materialdesignicons-webfont.ttf",
                                           LV_FREETYPE_FONT_RENDER_MODE_BITMAP, 160, LV_FREETYPE_FONT_STYLE_NORMAL);
     _font_xs_mdi = lv_freetype_font_create("../../fonts/materialdesignicons-webfont.ttf",
-                                          LV_FREETYPE_FONT_RENDER_MODE_BITMAP, 90, LV_FREETYPE_FONT_STYLE_NORMAL);
+                                           LV_FREETYPE_FONT_RENDER_MODE_BITMAP, 90, LV_FREETYPE_FONT_STYLE_NORMAL);
 }
 
 void ClockUI::do_render(lv_obj_t* parent) {
@@ -72,9 +72,9 @@ void ClockUI::do_render(lv_obj_t* parent) {
 
     // Add stats.
 
-    _outside_temp = create_stat(bottom_cont, 0, 0, 2, true, true, "°C", MDI_THERMOMETER);
-    _min_temp = create_stat(bottom_cont, 1, 0, 1, false, false, "°C", MDI_THERMOMETER_LOW);
-    _max_temp = create_stat(bottom_cont, 2, 0, 1, false, false, "°C", MDI_THERMOMETER_HIGH);
+    _outside_temp = create_stat(bottom_cont, 0, 0, 2, true, true, "ï¿½C", MDI_THERMOMETER);
+    _min_temp = create_stat(bottom_cont, 1, 0, 1, false, false, "ï¿½C", MDI_THERMOMETER_LOW);
+    _max_temp = create_stat(bottom_cont, 2, 0, 1, false, false, "ï¿½C", MDI_THERMOMETER_HIGH);
     _humidity = create_stat(bottom_cont, 1, 1, 1, false, false, "%", MDI_WATER_PERCENT);
     _printer = create_stat(bottom_cont, 2, 1, 1, false, false, "%", MDI_PRINTER_3D);
 
@@ -114,8 +114,8 @@ ClockUI::ForecastIcon ClockUI::create_forecast_icon(lv_obj_t* cont, int row) {
     return result;
 }
 
-ClockUI::Stat ClockUI::create_stat(lv_obj_t* cont, int col, int row, int row_span, bool large, bool sub_label, const char* unit,
-                                   const char* icon) {
+ClockUI::Stat ClockUI::create_stat(lv_obj_t* cont, int col, int row, int row_span, bool large, bool sub_label,
+                                   const char* unit, const char* icon) {
     const auto font = large ? _font_l : _font_m;
     const auto font_mdi = large ? _font_l_mdi : _font_m_mdi;
 
@@ -161,7 +161,7 @@ void ClockUI::update() {
     const auto now = chrono::system_clock::now();
     auto now_time_t = chrono::system_clock::to_time_t(now);
     auto now_tm = localtime(&now_time_t);
-    lv_label_set_text(_clock_label, format("{:02d}:{:02d}", now_tm->tm_hour, now_tm->tm_min).c_str());
+    lv_label_set_text(_clock_label, strformat("%02d:%02d", now_tm->tm_hour, now_tm->tm_min).c_str());
 
 #ifndef LV_SIMULATOR
 
@@ -175,28 +175,28 @@ void ClockUI::update() {
 #endif
 
     lv_label_set_text(_forecast1.icon_label, classify_weather_image(_api->get_forecast_hour_1_image()));
-    lv_label_set_text(_forecast1.hour_label, format("{}u", _api->get_forecast_hour_1_hour()).c_str());
-    lv_label_set_text(_forecast1.wind_speed_label, format("{}", _api->get_forecast_hour_1_wind_speed()).c_str());
+    lv_label_set_text(_forecast1.hour_label, strformat("%du", _api->get_forecast_hour_1_hour()).c_str());
+    lv_label_set_text(_forecast1.wind_speed_label, strformat("%d", _api->get_forecast_hour_1_wind_speed()).c_str());
     lv_label_set_text(_forecast2.icon_label, classify_weather_image(_api->get_forecast_hour_2_image()));
-    lv_label_set_text(_forecast2.hour_label, format("{}u", _api->get_forecast_hour_2_hour()).c_str());
-    lv_label_set_text(_forecast2.wind_speed_label, format("{}", _api->get_forecast_hour_2_wind_speed()).c_str());
+    lv_label_set_text(_forecast2.hour_label, strformat("%du", _api->get_forecast_hour_2_hour()).c_str());
+    lv_label_set_text(_forecast2.wind_speed_label, strformat("%d", _api->get_forecast_hour_2_wind_speed()).c_str());
     lv_label_set_text(_forecast3.icon_label, classify_weather_image(_api->get_forecast_hour_3_image()));
-    lv_label_set_text(_forecast3.hour_label, format("{}u", _api->get_forecast_hour_3_hour()).c_str());
-    lv_label_set_text(_forecast3.wind_speed_label, format("{}", _api->get_forecast_hour_3_wind_speed()).c_str());
+    lv_label_set_text(_forecast3.hour_label, strformat("%du", _api->get_forecast_hour_3_hour()).c_str());
+    lv_label_set_text(_forecast3.wind_speed_label, strformat("%d", _api->get_forecast_hour_3_wind_speed()).c_str());
 
     auto outside_temperature_half_rounded = round(_api->get_outside_temperature() * 2) / 2;
 
     auto outside_temperature_rounded = (int)outside_temperature_half_rounded;
     auto outside_temperature_fraction = (int)(outside_temperature_half_rounded * 10) % 10;
 
-    lv_label_set_text(_outside_temp.label, format("{}", outside_temperature_rounded).c_str());
-    lv_label_set_text(_outside_temp.sub_label, format(",{}", outside_temperature_fraction).c_str());
+    lv_label_set_text(_outside_temp.label, strformat("%d", outside_temperature_rounded).c_str());
+    lv_label_set_text(_outside_temp.sub_label, strformat(",%d", outside_temperature_fraction).c_str());
 
-    lv_label_set_text(_min_temp.label, format("{}", (int)round(_api->get_forecast_temperature_low())).c_str());
-    lv_label_set_text(_max_temp.label, format("{}", (int)round(_api->get_forecast_temperature_high())).c_str());
+    lv_label_set_text(_min_temp.label, strformat("%.0f", _api->get_forecast_temperature_low()).c_str());
+    lv_label_set_text(_max_temp.label, strformat("%.0f", _api->get_forecast_temperature_high()).c_str());
 
-    lv_label_set_text(_humidity.label, format("{}", (int)round(_api->get_woonkamer_humidity())).c_str());
-    lv_label_set_text(_printer.label, format("{}", (int)round(_api->get_printer_voortgang())).c_str());
+    lv_label_set_text(_humidity.label, strformat("%.0f", _api->get_woonkamer_humidity()).c_str());
+    lv_label_set_text(_printer.label, strformat("%.0f", _api->get_printer_voortgang()).c_str());
 }
 
 void ClockUI::quit() { system("shutdown -h now"); }

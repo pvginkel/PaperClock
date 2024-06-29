@@ -2,15 +2,10 @@
 
 #define _USE_MATH_DEFINES
 
-#include <curl/curl.h>
 #include <fcntl.h>
 #include <math.h>
 #include <string.h>
 #include <sys/stat.h>
-#include <unicode/locid.h>
-#include <unicode/normlzr.h>
-#include <unicode/translit.h>
-#include <unicode/unistr.h>
 
 #ifndef LV_SIMULATOR
 
