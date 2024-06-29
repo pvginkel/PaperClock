@@ -1,8 +1,5 @@
 ﻿#pragma once
 
-static constexpr auto NORMAL_FONT = &lv_font_sans_28;
-static constexpr auto LARGE_FONT = &lv_font_sans_50_bold;
-
 void lv_obj_set_bounds(lv_obj_t* obj, int x, int y, int width, int height, lv_text_align_t align);
 
 class LvglUI;
@@ -46,5 +43,4 @@ protected:
     void reset_outer_container_styles(lv_obj_t* cont);
     void reset_layout_container_styles(lv_obj_t* cont);
     LvglUICookie get_cookie() const { return {_current_cookie}; }
-    void style_icon_button(lv_obj_t* button);
 };

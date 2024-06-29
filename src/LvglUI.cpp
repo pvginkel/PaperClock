@@ -43,7 +43,7 @@ void LvglUI::render() {
 
     lv_obj_clean(parent);
 
-    lv_theme_default_init(nullptr, lv_color_black(), lv_color_black(), LV_THEME_DEFAULT_DARK, NORMAL_FONT);
+    lv_theme_default_init(nullptr, lv_color_black(), lv_color_black(), LV_THEME_DEFAULT_DARK, &lv_font_montserrat_24);
 
     lv_obj_set_style_bg_color(parent, lv_color_white(), LV_PART_MAIN);
 
@@ -113,11 +113,4 @@ void LvglUI::reset_layout_container_styles(lv_obj_t* cont) {
     lv_obj_remove_style_all(cont);
     lv_obj_set_style_pad_all(cont, 0, LV_PART_MAIN);
     lv_obj_set_size(cont, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-}
-
-void LvglUI::style_icon_button(lv_obj_t* button) {
-    lv_obj_set_style_text_font(button, &lv_font_symbols, LV_PART_MAIN);
-    auto pad = lv_obj_get_style_pad_top(button, LV_PART_MAIN);
-    lv_obj_set_style_pad_hor(button, pad * 1.3, LV_PART_MAIN);
-    lv_obj_set_style_pad_ver(button, pad * 1.2, LV_PART_MAIN);
 }

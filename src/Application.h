@@ -2,6 +2,11 @@
 
 #include "ClockUI.h"
 #include "Queue.h"
+#include "TestClockUI.h"
+
+#if defined(LV_SIMULATOR) && true
+#define TEST_CLOCK
+#endif
 
 class Application {
 public:
@@ -14,6 +19,9 @@ public:
     Queue _queue;
     Tasks _tasks;
     ClockUI* _clock;
+#ifdef TEST_CLOCK
+    TestClockUI* _test_clock = nullptr;
+#endif
     HomeAssistantApi* _api;
 
 public:
