@@ -9,49 +9,52 @@ for (const fileName of fs.readdirSync('..')) {
   }
 }
 
-const fonts: [{ name: string; size: number | [number]; fonts: [{ file: string; range?: string; icons?: [{ name: string; icon: string; image?: string }] }] }] =
-  <any>yaml.load(fs.readFileSync('generate-fonts.yaml', 'utf-8').replace(/^\s*\/\/.*$/gm, ''));
+const fonts: [
+  { name: string; size: undefined | number | [number]; fonts: [{ file: string; range?: string; icons?: [{ name: string; icon: string; image?: string }] }] }
+] = <any>yaml.load(fs.readFileSync('generate-fonts.yaml', 'utf-8').replace(/^\s*\/\/.*$/gm, ''));
 
 let fontNames = [];
 
 for (const font of fonts) {
-  let sizes = Array.isArray(font.size) ? font.size : [font.size];
+  if (font.size) {
+    let sizes = Array.isArray(font.size) ? font.size : [font.size];
 
-  for (const size of sizes) {
-    let name = font.name.replace(/\{size\}/g, `${size}`);
-    fontNames.push(name);
+    for (const size of sizes) {
+      let name = font.name.replace(/\{size\}/g, `${size}`);
+      fontNames.push(name);
 
-    console.log();
-    console.log(`Generating ${name}`);
-    console.log();
+      console.log();
+      console.log(`Generating ${name}`);
+      console.log();
 
-    let args = `--no-compress --no-prefilter --bpp 4 --size ${size} --format lvgl -o "../src/${name}.c" --force-fast-kern-format --lv-include lvgl.h `;
+      let args = `--no-compress --no-prefilter --bpp 4 --size ${size} --format lvgl -o "../src/${name}.c" --force-fast-kern-format --lv-include lvgl.h `;
 
-    for (const file of font.fonts) {
-      let range = file.range;
+      for (const file of font.fonts) {
+        let range = file.range;
 
-      if (!range) {
-        if (!file.icons) {
-          throw 'Either range or icons must be provided';
-        }
-
-        range = '';
-
-        for (const icon of file.icons) {
-          if (range) {
-            range += ',';
+        if (!range) {
+          if (!file.icons) {
+            throw 'Either range or icons must be provided';
           }
-          range += `0x${icon.icon}`;
+
+          range = '';
+
+          for (const icon of file.icons) {
+            if (range) {
+              range += ',';
+            }
+            range += `0x${icon.icon}`;
+          }
         }
+
+        args += `--font "fonts/${file.file}" --range "${range}" `;
       }
 
-      args += `--font "fonts/${file.file}" --range "${range}" `;
-    }
-
-    if (process.platform === 'win32') {
-      console.log(execSync(`call ./node_modules/.bin/lv_font_conv.cmd ${args}`, { encoding: 'utf-8' }));
-    } else {
-      console.log(execSync(`./node_modules/.bin/lv_font_conv ${args}`, { encoding: 'utf-8' }));
+      if (process.platform === 'win32') {
+        console.log(execSync(`call ./node_modules/.bin/lv_font_conv.cmd ${args}`, { encoding: 'utf-8' }));
+      } else {
+        console.log(execSync(`./node_modules/.bin/lv_font_conv ${args}`, { encoding: 'utf-8' }));
+      }
     }
   }
 }
