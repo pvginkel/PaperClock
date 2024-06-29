@@ -62,7 +62,11 @@
         "typeinfo": "cpp",
         "filesystem": "cpp",
         "lv_demo_vector_graphic.h": "c",
-        "iomanip": "cpp"
+        "iomanip": "cpp",
+        "dev_config.h": "c",
+        "ranges": "cpp",
+        "span": "cpp",
+        "lgpio.h": "c"
     },
         "files.exclude": {
             "tools/windows_simulator/**": true

@@ -41,6 +41,12 @@
 
 using namespace std;
 
+#if LV_SIMULATOR
+#define FONTS_PREFIX "../../fonts/"
+#else
+#define FONTS_PREFIX "../tools/fonts/"
+#endif
+
 #include "Callback.h"
 #include "RefCounted.h"
 #include "fonts.h"

@@ -9,8 +9,8 @@ LOG_TAG(TestClockUI);
 void TestClockUI::do_begin() {
     LvglUI::do_begin();
 
-    _font_xl = lv_freetype_font_create("../../fonts/Roboto-Medium.ttf", LV_FREETYPE_FONT_RENDER_MODE_BITMAP, 440,
-                                      LV_FREETYPE_FONT_STYLE_NORMAL);
+    _font_xl = lv_freetype_font_create(FONTS_PREFIX "Roboto-Medium.ttf", LV_FREETYPE_FONT_RENDER_MODE_BITMAP, 440,
+                                       LV_FREETYPE_FONT_STYLE_NORMAL);
 }
 
 void TestClockUI::do_render(lv_obj_t* parent) {
@@ -43,5 +43,6 @@ void TestClockUI::update() {
     _last_time = now_time_t;
 
     auto now_tm = localtime(&now_time_t);
-    lv_label_set_text(_clock_label, strformat("%02d:%02d:%02d", now_tm->tm_hour, now_tm->tm_min, now_tm->tm_sec).c_str());
+    lv_label_set_text(_clock_label,
+                      strformat("%02d:%02d:%02d", now_tm->tm_hour, now_tm->tm_min, now_tm->tm_sec).c_str());
 }

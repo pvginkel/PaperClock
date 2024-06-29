@@ -21,11 +21,13 @@ add_subdirectory(lib/cJSON)
 
 target_include_directories(lvgl PUBLIC ${PROJECT_SOURCE_DIR}/src /usr/local/include/freetype2)
 
-FILE(GLOB SOURCES ${PROJECT_SOURCE_DIR}/src/*.c ${PROJECT_SOURCE_DIR}/src/*.cpp)
+FILE(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.c ${PROJECT_SOURCE_DIR}/src/*.cpp)
 
 add_executable(main ${SOURCES})
 
-target_link_libraries(main lvgl m pthread cjson backtrace freetype)
+target_compile_definitions(main PRIVATE LGPIO=1)
+
+target_link_libraries(main lvgl m pthread cjson backtrace freetype lgpio)
 
 target_include_directories(
     main PUBLIC

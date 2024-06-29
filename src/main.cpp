@@ -59,11 +59,15 @@ int main() {
 
     Device device;
 
-    device.begin();
+    if (!device.begin()) {
+        return 1;
+    }
 
     Application application;
 
     application.begin();
+
+    auto last_tick_call = chrono::high_resolution_clock::now();
 
     while (true) {
         auto start = chrono::high_resolution_clock::now();
@@ -79,6 +83,13 @@ int main() {
         if (sleep > 0) {
             usleep(sleep);
         }
+
+        auto after_sleep = chrono::high_resolution_clock::now();
+        auto last_tick_duration = chrono::duration_cast<chrono::milliseconds>(after_sleep - last_tick_call).count();
+
+        lv_tick_inc(last_tick_duration);
+
+        last_tick_call = after_sleep;
     }
 
     return 0;
