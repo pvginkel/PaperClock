@@ -14,3 +14,6 @@
 [submodule "lib/libbacktrace"]
 	path = lib/libbacktrace
 	url = https://github.com/ianlancetaylor/libbacktrace.git
+[submodule "lib/freetype"]
+	path = lib/freetype
+	url = https://github.com/freetype/freetype.git
