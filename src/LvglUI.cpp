@@ -43,10 +43,9 @@ void LvglUI::render() {
 
     lv_obj_clean(parent);
 
-    lv_theme_default_init(nullptr, lv_palette_main(LV_PALETTE_BLUE), lv_palette_main(LV_PALETTE_CYAN),
-                          LV_THEME_DEFAULT_DARK, NORMAL_FONT);
+    lv_theme_default_init(nullptr, lv_color_black(), lv_color_black(), LV_THEME_DEFAULT_DARK, NORMAL_FONT);
 
-    lv_obj_set_style_bg_color(parent, lv_color_black(), LV_PART_MAIN);
+    lv_obj_set_style_bg_color(parent, lv_color_white(), LV_PART_MAIN);
 
     remove_loading_ui();
 
@@ -105,13 +104,15 @@ void LvglUI::remove_loading_ui() {
 }
 
 void LvglUI::reset_outer_container_styles(lv_obj_t* cont) {
-    auto row_pad = lv_obj_get_style_pad_row(cont, LV_PART_MAIN);
-    auto column_pad = lv_obj_get_style_pad_column(cont, LV_PART_MAIN);
     lv_obj_remove_style_all(cont);
     lv_obj_set_size(cont, LV_PCT(100), LV_PCT(100));
-    lv_obj_set_style_pad_row(cont, lv_dpx(PADDING), LV_PART_MAIN);
-    lv_obj_set_style_pad_column(cont, lv_dpx(PADDING), LV_PART_MAIN);
     lv_obj_set_style_pad_all(cont, lv_dpx(PADDING), LV_PART_MAIN);
+}
+
+void LvglUI::reset_layout_container_styles(lv_obj_t* cont) {
+    lv_obj_remove_style_all(cont);
+    lv_obj_set_style_pad_all(cont, 0, LV_PART_MAIN);
+    lv_obj_set_size(cont, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 }
 
 void LvglUI::style_icon_button(lv_obj_t* button) {

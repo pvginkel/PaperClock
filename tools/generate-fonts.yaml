@@ -13,6 +13,56 @@
         61556,61559,61560,61561,61563,61587,61589,61636,61637,61639,61641,61664,61671,61674,61683,
         61724,61732,61787,61931,62016,62017,62018,62019,62020,62087,62099,62212,62189,62810,63426,
         63650
+    - file: materialdesignicons-webfont.ttf
+      icons:
+        - name: mdi-thermometer-high
+          icon: 000F10C2
+        - name: mdi-thermometer-low
+          icon: 000F10C3
+        - name: mdi-thermometer
+          icon: 000F050F
+        - name: mdi-water-percent
+          icon: 000F058E
+        - name: mdi-printer-3d
+          icon: 000F042B
+        - name: mdi-windsock
+          icon: 000F15FA
+        - name: mdi-weather-sunny
+          icon: 000F0599
+          image: zonnig
+        - name: mdi-weather-lightning
+          icon: 000F0593
+          image: bliksem
+        - name: mdi-weather-rainy
+          icon: 000F0597
+          image: regen
+        - name: mdi-weather-pouring
+          icon: 000F0596
+          image: buien
+        - name: mdi-weather-hail
+          icon: 000F0592
+          image: hagel
+        - name: mdi-weather-fog
+          icon: 000F0591
+          image: mist
+        - name: mdi-weather-snowy
+          icon: 000F0598
+          image: sneeuw
+        - name: mdi-weather-cloudy
+          icon: 000F0590
+          image: bewolkt,zwaarbewolkt
+        - name: mdi-weather-partly-cloudy
+          icon: 000F0595
+          image: lichtbewolkt,halfbewolkt
+        - name: mdi-weather-partly-rainy
+          icon: 000F0F33
+          image: halfbewolkt_regen
+        - name: mdi-weather-night
+          icon: 000F0594
+          image: nachtmist,helderenacht
+        - name: mdi-weather-night-partly-cloudy
+          icon: 000F0F31
+          image: nachtbewolkt
 - name: lv_font_symbols
   size: 32
   fonts:
@@ -24,6 +74,7 @@
     - 34
     - 40
     - 50
+    - 100
   fonts:
     - file: Roboto-Bold.ttf
       range: 0x20-0xFF,0x2018,0x2019,0x2022
