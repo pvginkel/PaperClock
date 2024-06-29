@@ -6,7 +6,8 @@ class HomeAssistantApi {
     int _update_cookie;
 
 public:
-    HomeAssistantApi(string address, string client_id) : _address(std::move(address)), _client_id(std::move(client_id)) {}
+    HomeAssistantApi(string address, string client_id)
+        : _address(std::move(address)), _client_id(std::move(client_id)) {}
 
     int get_update_cookie() { return _update_cookie; }
     const char* get_forecast_hour_1_image() { return "zonnig"; }

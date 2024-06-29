@@ -44,10 +44,8 @@ void lv_obj_add_event(lv_obj_t* obj, lv_event_code_t event, function<void()> fun
     event_manager->add_event(event, func);
 }
 
-#define lvgl_define_event(uname, lname)                                    \
-    void lv_obj_on_##lname(lv_obj_t* obj, function<void()> func) { \
-        lv_obj_add_event(obj, LV_EVENT_##uname, func);                     \
-    }
+#define lvgl_define_event(uname, lname) \
+    void lv_obj_on_##lname(lv_obj_t* obj, function<void()> func) { lv_obj_add_event(obj, LV_EVENT_##uname, func); }
 
 lvgl_define_event(PRESSED, pressed);
 lvgl_define_event(PRESSING, pressing);

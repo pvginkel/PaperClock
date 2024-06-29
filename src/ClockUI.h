@@ -1,10 +1,10 @@
 #pragma once
 #pragma once
 
+#include "HomeAssistantApi.h"
 #include "LvglUI.h"
 #include "Queue.h"
 #include "Tasks.h"
-#include "HomeAssistantApi.h"
 
 class ClockUI : public LvglUI {
     struct ForecastIcon {
@@ -41,7 +41,8 @@ class ClockUI : public LvglUI {
     Stat _printer;
 
 public:
-    ClockUI(Tasks* tasks, Queue* queue, HomeAssistantApi* api) : _tasks(tasks), _queue(queue), _api(api), _api_cookie(0) {}
+    ClockUI(Tasks* tasks, Queue* queue, HomeAssistantApi* api)
+        : _tasks(tasks), _queue(queue), _api(api), _api_cookie(0) {}
 
 protected:
     void do_begin() override;
