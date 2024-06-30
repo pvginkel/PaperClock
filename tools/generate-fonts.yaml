@@ -1,4 +1,5 @@
 # Use https://dotnetfiddle.net/Iglnxu to convert FA glyphs to UTF8.
+# Use https://pictogrammers.com/library/mdi/ to find icons.
 
 - name: 'lv_font_sans_{size}'
   fonts:
@@ -51,3 +52,5 @@
         - name: mdi-weather-night-partly-cloudy
           icon: 000F0F31
           image: nachtbewolkt
+        - name: fa-face-sleeping
+          icon: 0000e38d

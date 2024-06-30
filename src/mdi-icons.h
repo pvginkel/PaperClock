@@ -18,5 +18,6 @@
 #define MDI_WEATHER_PARTLY_RAINY "\U000F0F33"
 #define MDI_WEATHER_NIGHT "\U000F0594"
 #define MDI_WEATHER_NIGHT_PARTLY_CLOUDY "\U000F0F31"
+#define FA_FACE_SLEEPING "\U0000e38d"
 
 const char* classify_weather_image(const string& image);
