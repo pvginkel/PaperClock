@@ -55,5 +55,4 @@ private:
     ForecastIcon create_forecast_icon(lv_obj_t* cont, int row);
     Stat create_stat(lv_obj_t* cont, int col, int row, int row_span, bool large, bool sub_label, const char* unit,
                      const char* icon);
-    void quit();
 };

@@ -17,3 +17,6 @@
 [submodule "lib/freetype"]
 	path = lib/freetype
 	url = https://github.com/freetype/freetype.git
+[submodule "lib/paho"]
+	path = lib/paho
+	url = https://github.com/eclipse/paho.mqtt.c.git

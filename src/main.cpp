@@ -65,7 +65,7 @@ int main() {
 
     device.set_on(true);
 
-    Application application;
+    Application application(&device);
 
     application.begin();
 

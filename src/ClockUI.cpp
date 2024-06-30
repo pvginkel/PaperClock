@@ -174,7 +174,18 @@ void ClockUI::update() {
     const auto now = chrono::system_clock::now();
     auto now_time = chrono::system_clock::to_time_t(now);
 
-    if (_last_update_time != 0 && (now_time % 60 != 0 || now_time == _last_update_time)) {
+    auto update = _last_update_time == 0 || (now_time % 60 == 0 && now_time != _last_update_time) ||
+                  (_api_cookie == 0 && _api->get_update_cookie() != 0);
+
+#if false
+
+    if (_api->get_update_cookie() != _api_cookie) {
+        update = true;
+    }
+
+#endif
+
+    if (!update) {
         return;
     }
 
@@ -218,5 +229,3 @@ void ClockUI::update() {
     lv_label_set_text(_humidity.label, strformat("%.0f", _api->get_woonkamer_humidity()).c_str());
     lv_label_set_text(_printer.label, strformat("%.0f", _api->get_printer_voortgang()).c_str());
 }
-
-void ClockUI::quit() { system("shutdown -h now"); }

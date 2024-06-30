@@ -233,8 +233,6 @@ Info:
 ******************************************************************************/
 UBYTE DEV_Module_Init(void)
 {
-    Debug("/***********************************/ \r\n");
-
 #ifdef BCM
 	if(!bcm2835_init()) {
 		Debug("bcm2835 init failed  !!! \r\n");
@@ -304,7 +302,6 @@ UBYTE DEV_Module_Init(void)
     DEV_HARDWARE_SPI_setSpeed(12500000);
 #endif
 
-    Debug("/***********************************/ \r\n");
 	return 0;
 }
 

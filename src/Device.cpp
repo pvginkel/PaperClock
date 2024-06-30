@@ -8,7 +8,7 @@
 
 static auto constexpr VCOM = -1.58;
 static auto constexpr MODE = 0;
-static auto constexpr INIT_DRAW_INTERVAL = 50;
+static auto constexpr INIT_DRAW_INTERVAL = 30;
 
 LOG_TAG(Device);
 
@@ -130,8 +130,6 @@ bool Device::begin() {
         LOGE(TAG, "Alignment is not supported");
         return false;
     }
-
-    EPD_IT8951_Clear_Refresh(_device_info, _init_target_memory_addr, INIT_Mode, true);
 
     lv_init();
 

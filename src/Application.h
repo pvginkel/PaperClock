@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ClockUI.h"
+#include "Device.h"
 #include "Queue.h"
 #include "TestClockUI.h"
 
@@ -16,6 +17,7 @@ public:
     static constexpr auto PRODUCTION = false;
 #endif
 
+    Device* _device;
     Queue _queue;
     Tasks _tasks;
     ClockUI* _clock;
@@ -25,7 +27,7 @@ public:
     HomeAssistantApi* _api;
 
 public:
-    Application() : _clock(nullptr), _api(nullptr) {}
+    Application(Device* device) : _device(device), _clock(nullptr), _api(nullptr) {}
 
     void begin();
     void process();

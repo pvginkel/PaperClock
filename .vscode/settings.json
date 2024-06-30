@@ -66,7 +66,13 @@
         "dev_config.h": "c",
         "ranges": "cpp",
         "span": "cpp",
-        "lgpio.h": "c"
+        "lgpio.h": "c",
+        "codecvt": "cpp",
+        "forward_list": "cpp",
+        "map": "cpp",
+        "future": "cpp",
+        "iostream": "cpp",
+        "sstream": "cpp"
     },
         "files.exclude": {
             "tools/windows_simulator/**": true

@@ -8,18 +8,27 @@ void Application::begin() {
     LOGI(TAG, "Starting...");
 
     auto address = getenv("MQTT_ADDRESS");
-    auto client_id = getenv("MQTT_PASSWORD");
+    auto user_name = getenv("MQTT_USER_NAME");
+    auto password = getenv("MQTT_PASSWORD");
 
     if (!address) {
         LOGE(TAG, "MQTT_ADDRESS environment variable not set");
         exit(1);
     }
-    if (!client_id) {
+    if (!user_name) {
+        LOGE(TAG, "MQTT_USER_NAME environment variable not set");
+        exit(1);
+    }
+    if (!password) {
         LOGE(TAG, "MQTT_PASSWORD environment variable not set");
         exit(1);
     }
 
-    _api = new HomeAssistantApi(address, client_id);
+    _api = new HomeAssistantApi(_device, address, user_name, password);
+    if (!_api->begin()) {
+        LOGE(TAG, "Failed to begin API");
+        exit(2);
+    }
 
 #ifdef TEST_CLOCK
     _test_clock = new TestClockUI();
