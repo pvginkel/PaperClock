@@ -91,6 +91,9 @@ void ClockUI::do_render(lv_obj_t* parent) {
     _humidity = create_stat(bottom_cont, 1, 1, 1, false, false, "%", MDI_WATER_PERCENT);
     _printer = create_stat(bottom_cont, 2, 1, 1, false, false, "%", MDI_PRINTER_3D);
 
+    _last_update_time = 0;
+    _api_cookie = 0;
+
     update();
 }
 

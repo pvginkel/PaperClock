@@ -8,7 +8,7 @@ if [ ! -d build ]; then mkdir build; fi
 
 cd build
 
-if [ -f CMakeCache.txt ]; then rm CMakeCache.txt; fi
+#if [ -f CMakeCache.txt ]; then rm CMakeCache.txt; fi
 
 if grep -q 'Raspbian' /etc/os-release; then
   cmake ..

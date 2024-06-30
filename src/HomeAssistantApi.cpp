@@ -81,7 +81,7 @@ int HomeAssistantApi::message_arrived(char *topic_name, int topic_len, MQTTClien
         auto sub_topic = topic_name + strlen(TOPIC_PREFIX);
 
         if (strcmp(sub_topic, "set/screen_on") == 0) {
-            _device->set_on(strcmp((char *)message->payload, "true") == 0);
+            _screen_on_changed.call(strcmp((char *)message->payload, "true") == 0);
         } else if (strcmp(sub_topic, "set/forecast_hour_1_image") == 0) {
             _forecast_hour_1_image = (char *)message->payload;
             _update_cookie++;

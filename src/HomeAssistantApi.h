@@ -4,7 +4,6 @@
 #include "MQTTClient.h"
 
 class HomeAssistantApi {
-    Device* _device;
     string _address;
     string _client_id;
     string _user_name;
@@ -25,11 +24,11 @@ class HomeAssistantApi {
     double _forecast_temperature_high;
     double _woonkamer_humidity;
     double _printer_vooruitgang;
+    Callback<bool> _screen_on_changed;
 
 public:
-    HomeAssistantApi(Device* device, string address, string user_name, string password)
-        : _device(device),
-          _address(std::move(address)),
+    HomeAssistantApi(string address, string user_name, string password)
+        : _address(std::move(address)),
           _client_id(strformat("session%d", rand())),
           _user_name(std::move(user_name)),
           _password(std::move(password))
@@ -38,6 +37,7 @@ public:
 
     bool begin();
     void end();
+    void on_screen_on_changed(function<void(bool)> func) { _screen_on_changed.add(func); }
 
     int get_update_cookie() { return _update_cookie; }
     const string& get_forecast_hour_1_image() { return _forecast_hour_1_image; }

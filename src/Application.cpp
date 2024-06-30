@@ -24,11 +24,34 @@ void Application::begin() {
         exit(1);
     }
 
-    _api = new HomeAssistantApi(_device, address, user_name, password);
+    _api = new HomeAssistantApi(address, user_name, password);
     if (!_api->begin()) {
         LOGE(TAG, "Failed to begin API");
         exit(2);
     }
+
+    _api->on_screen_on_changed([this](bool on) {
+        if (on) {
+#ifdef TEST_CLOCK
+            _test_clock->render();
+#else
+            _clock->render();
+#endif
+
+            _device->set_on(true);
+        } else {
+            _device->clear_screen();
+
+            _shutdown->render();
+
+            lv_timer_create(
+                [](lv_timer_t* timer) {
+                    ((Application*)timer->user_data)->_device->set_on(false);
+                    lv_timer_delete(timer);
+                },
+                1000, this);
+        }
+    });
 
 #ifdef TEST_CLOCK
     _test_clock = new TestClockUI();
@@ -41,6 +64,9 @@ void Application::begin() {
     _clock->begin();
     _clock->render();
 #endif
+
+    _shutdown = new ShutdownUI();
+    _shutdown->begin();
 }
 
 void Application::process() {

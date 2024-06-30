@@ -3,6 +3,7 @@
 #include "ClockUI.h"
 #include "Device.h"
 #include "Queue.h"
+#include "ShutdownUI.h"
 #include "TestClockUI.h"
 
 #if false
@@ -21,8 +22,9 @@ public:
     Queue _queue;
     Tasks _tasks;
     ClockUI* _clock;
+    ShutdownUI* _shutdown;
 #ifdef TEST_CLOCK
-    TestClockUI* _test_clock = nullptr;
+    TestClockUI* _test_clock;
 #endif
     HomeAssistantApi* _api;
 

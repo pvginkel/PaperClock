@@ -155,6 +155,8 @@ bool Device::begin() {
     return true;
 }
 
+void Device::clear_screen() { EPD_IT8951_Clear_Refresh(_device_info, _init_target_memory_addr, INIT_Mode, true); }
+
 void Device::set_on(bool on) {
     if (on == _on) {
         return;
@@ -163,6 +165,8 @@ void Device::set_on(bool on) {
     _on = on;
 
     if (on) {
+        LOGI(TAG, "Turning screen on");
+
         // Force a full refresh.
         _draw_count = 0;
 
@@ -172,7 +176,7 @@ void Device::set_on(bool on) {
 
         lv_obj_invalidate(lv_screen_active());
     } else {
-        EPD_IT8951_Clear_Refresh(_device_info, _init_target_memory_addr, INIT_Mode, true);
+        LOGI(TAG, "Turning screen off");
 
         EPD_IT8951_Sleep();
     }

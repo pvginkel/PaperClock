@@ -18,6 +18,7 @@ class Device {
 public:
     bool begin();
     void set_on(bool on);
+    void clear_screen();
 
 private:
     void flush_cb(lv_display_t* disp, const lv_area_t* area, uint8_t* px_map);
