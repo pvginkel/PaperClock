@@ -9,7 +9,7 @@ public:
     HomeAssistantApi(string address, string client_id)
         : _address(std::move(address)), _client_id(std::move(client_id)) {}
 
-    int get_update_cookie() { return _update_cookie; }
+    int get_update_cookie() { return 1; }
     const char* get_forecast_hour_1_image() { return "zonnig"; }
     int get_forecast_hour_1_wind_speed() { return 2; }
     int get_forecast_hour_1_hour() { return 20; }

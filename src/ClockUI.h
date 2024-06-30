@@ -29,6 +29,7 @@ class ClockUI : public LvglUI {
     lv_font_t* _font_xs;
     lv_font_t* _font_xs_mdi;
     HomeAssistantApi* _api;
+    time_t _last_update_time;
     int _api_cookie;
     lv_obj_t* _clock_label;
     ForecastIcon _forecast1;
@@ -44,6 +45,8 @@ public:
     ClockUI(Tasks* tasks, Queue* queue, HomeAssistantApi* api)
         : _tasks(tasks), _queue(queue), _api(api), _api_cookie(0) {}
 
+    void update();
+
 protected:
     void do_begin() override;
     void do_render(lv_obj_t* parent) override;
@@ -52,6 +55,5 @@ private:
     ForecastIcon create_forecast_icon(lv_obj_t* cont, int row);
     Stat create_stat(lv_obj_t* cont, int col, int row, int row_span, bool large, bool sub_label, const char* unit,
                      const char* icon);
-    void update();
     void quit();
 };

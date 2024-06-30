@@ -4,49 +4,73 @@
 
 #include "Device.h"
 #include "IT8951-ePaper/DEV_Config.h"
-#include "IT8951-ePaper/EPD_IT8951.h"
 #include "lvgl.h"
 
 static auto constexpr VCOM = -1.58;
 static auto constexpr MODE = 0;
+static auto constexpr INIT_DRAW_INTERVAL = 50;
 
 LOG_TAG(Device);
 
 void Device::flush_cb(lv_display_t* disp, const lv_area_t* area, uint8_t* px_map) {
+    if (!_on) {
+        lv_display_flush_ready(disp);
+        return;
+    }
+
     // The color format is RGB565. We howevery only support 4 bit grayscale.
     // We can just take the four most significant bytes of (4 of the 5 bits of red).
     // This assumes that we're drawing black & white anyway.
 
     auto buf = (uint16_t*)px_map;
-    auto offset = 0;
+    auto target = _device_buffer;
+
+    auto left = area->x1;
+    auto top = area->y1;
+    auto width = area->x2 - area->x1 + 1;
+    auto height = area->y2 - area->y1 + 1;
+
+    // Ensure width is a multiple of 8.
+    width = (width + 7) & ~7;
+
+    // Every INIT_DRAW_INTERVAL draws we clear the screen and update the whole screen.
+
+    if (_draw_count++ % INIT_DRAW_INTERVAL == 0) {
+        LOGI(TAG, "Performing full refresh");
+
+        left = 0;
+        top = 0;
+        width = _panel_width;
+        height = _panel_height;
+
+        // Tried to include a draw screen in the refresh. An image is sent with
+        // the command, so it looks like it's possible, but it doesn't work.
+
+        EPD_IT8951_Clear_Refresh(_device_info, _init_target_memory_addr, INIT_Mode, true);
+    }
+
+    // There's still a bug somewhere that requires updates to be done in whole
+    // lines.
+
+    left = 0;
+    width = _panel_width;
+
     uint8_t byte = 0;
 
-    for (auto y = area->y1; y <= area->y2; y++) {
-        for (auto x = area->x1; x <= area->x2; x++) {
-            auto pixel = buf[y * _panel_width + x];
+    for (auto y = 0; y < height; y++) {
+        for (auto x = 0; x < width; x++) {
+            auto pixel = buf[(top + y) * _panel_width + (x + left)];
 
-            if (offset % 2 == 0) {
-                byte = pixel >> 12;
-            } else {
-                byte |= (pixel >> 12) << 4;
+            byte |= (pixel >> 15) << (x % 8);
 
-                _device_buffer[offset / 2] = byte;
+            if (x % 8 == 7) {
+                *(target++) = byte;
+                byte = 0;
             }
-
-            offset++;
         }
     }
 
-    if (_four_byte_align) {
-        LOGE(TAG, "Alignment is not supported");
-        exit(2);
-        return;
-    }
-
-    LOGI(TAG, "Drawing %d pixels area %d %d %d %d", offset, area->x1, area->y1, area->x2 + 1, area->y2 + 1);
-
-    EPD_IT8951_4bp_Refresh(_device_buffer, area->x1, area->y1, area->x2 + 1 - area->x1, area->y2 + 1 - area->y1, true,
-                           _init_target_memory_addr, true);
+    EPD_IT8951_1bp_Refresh(_device_buffer, left, top, width, height, A2_Mode, _init_target_memory_addr, true);
 
     lv_display_flush_ready(disp);
 }
@@ -61,9 +85,9 @@ bool Device::begin() {
     auto vcom = (UWORD)(fabs(VCOM) * 1000);
     auto epd_mode = MODE;
 
-    auto dev_info = EPD_IT8951_Init(vcom);
+    _device_info = EPD_IT8951_Init(vcom);
 
-    if (!dev_info.LUT_Version || !*dev_info.LUT_Version) {
+    if (!_device_info.LUT_Version || !*_device_info.LUT_Version) {
         LOGE(TAG, "Cannot connect to device!\r\n");
         return false;
     }
@@ -74,11 +98,11 @@ bool Device::begin() {
 #endif
 
     // get some important info from Dev_Info structure
-    _panel_width = dev_info.Panel_W;
-    _panel_height = dev_info.Panel_H;
-    _init_target_memory_addr = dev_info.Memory_Addr_L | (dev_info.Memory_Addr_H << 16);
+    _panel_width = _device_info.Panel_W;
+    _panel_height = _device_info.Panel_H;
+    _init_target_memory_addr = _device_info.Memory_Addr_L | (_device_info.Memory_Addr_H << 16);
     _four_byte_align = false;
-    _lut_version = (char*)dev_info.LUT_Version;
+    _lut_version = (char*)_device_info.LUT_Version;
 
     if (strcmp(_lut_version, "M641") == 0) {
         // 6inch e-Paper HAT(800,600), 6inch HD e-Paper HAT(1448,1072), 6inch HD touch e-Paper HAT(1448,1072)
@@ -102,7 +126,12 @@ bool Device::begin() {
         A2_Mode = 6;
     }
 
-    EPD_IT8951_Clear_Refresh(dev_info, _init_target_memory_addr, INIT_Mode, true);
+    if (_four_byte_align) {
+        LOGE(TAG, "Alignment is not supported");
+        return false;
+    }
+
+    EPD_IT8951_Clear_Refresh(_device_info, _init_target_memory_addr, INIT_Mode, true);
 
     lv_init();
 
@@ -126,6 +155,29 @@ bool Device::begin() {
                            LV_DISPLAY_RENDER_MODE_DIRECT);
 
     return true;
+}
+
+void Device::set_on(bool on) {
+    if (on == _on) {
+        return;
+    }
+
+    _on = on;
+
+    if (on) {
+        // Force a full refresh.
+        _draw_count = 0;
+
+        EPD_IT8951_SystemRun();
+
+        // Force a full redraw of the screen.
+
+        lv_obj_invalidate(lv_screen_active());
+    } else {
+        EPD_IT8951_Clear_Refresh(_device_info, _init_target_memory_addr, INIT_Mode, true);
+
+        EPD_IT8951_Sleep();
+    }
 }
 
 #endif

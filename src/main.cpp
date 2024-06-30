@@ -63,6 +63,8 @@ int main() {
         return 1;
     }
 
+    device.set_on(true);
+
     Application application;
 
     application.begin();

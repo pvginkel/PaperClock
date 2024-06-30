@@ -4,7 +4,7 @@
 #include "Queue.h"
 #include "TestClockUI.h"
 
-#if defined(LV_SIMULATOR) && true
+#if false
 #define TEST_CLOCK
 #endif
 

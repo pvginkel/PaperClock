@@ -6,7 +6,7 @@
 class TestClockUI : public LvglUI {
     lv_font_t* _font_xl;
     lv_obj_t* _clock_label;
-    uint64_t _last_time;
+    time_t _last_time;
 
 public:
     TestClockUI() : _font_xl(nullptr), _clock_label(nullptr), _last_time(0) {}

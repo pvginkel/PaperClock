@@ -37,6 +37,8 @@ void Application::begin() {
 void Application::process() {
 #ifdef TEST_CLOCK
     _test_clock->update();
+#else
+    _clock->update();
 #endif
 
     _queue.process();

@@ -8,26 +8,35 @@
 
 LOG_TAG(ClockUI);
 
+static constexpr auto FONT_SIZE_XL = 440;
+static constexpr auto FONT_SIZE_L = 220;
+static constexpr auto FONT_SIZE_M = 140;
+static constexpr auto FONT_SIZE_S = 110;
+static constexpr auto FONT_SIZE_XS = 90;
+
 void ClockUI::do_begin() {
     LvglUI::do_begin();
 
-    _font_xl = lv_freetype_font_create("../../fonts/Roboto-Medium.ttf", LV_FREETYPE_FONT_RENDER_MODE_BITMAP, 440,
-                                       LV_FREETYPE_FONT_STYLE_NORMAL);
-    _font_l = lv_freetype_font_create("../../fonts/Roboto-Medium.ttf", LV_FREETYPE_FONT_RENDER_MODE_BITMAP, 220,
-                                      LV_FREETYPE_FONT_STYLE_NORMAL);
-    _font_m = lv_freetype_font_create("../../fonts/Roboto-Medium.ttf", LV_FREETYPE_FONT_RENDER_MODE_BITMAP, 160,
-                                      LV_FREETYPE_FONT_STYLE_NORMAL);
-    _font_s = lv_freetype_font_create("../../fonts/Roboto-Regular.ttf", LV_FREETYPE_FONT_RENDER_MODE_BITMAP, 110,
-                                      LV_FREETYPE_FONT_STYLE_NORMAL);
-    _font_xs = lv_freetype_font_create("../../fonts/Roboto-Regular.ttf", LV_FREETYPE_FONT_RENDER_MODE_BITMAP, 90,
-                                       LV_FREETYPE_FONT_STYLE_NORMAL);
+    _font_xl = lv_freetype_font_create(FONTS_PREFIX "Roboto-Medium.ttf", LV_FREETYPE_FONT_RENDER_MODE_BITMAP,
+                                       FONT_SIZE_XL, LV_FREETYPE_FONT_STYLE_NORMAL);
+    _font_l = lv_freetype_font_create(FONTS_PREFIX "Roboto-Medium.ttf", LV_FREETYPE_FONT_RENDER_MODE_BITMAP,
+                                      FONT_SIZE_L, LV_FREETYPE_FONT_STYLE_NORMAL);
+    _font_m = lv_freetype_font_create(FONTS_PREFIX "Roboto-Medium.ttf", LV_FREETYPE_FONT_RENDER_MODE_BITMAP,
+                                      FONT_SIZE_M, LV_FREETYPE_FONT_STYLE_NORMAL);
+    _font_s = lv_freetype_font_create(FONTS_PREFIX "Roboto-Regular.ttf", LV_FREETYPE_FONT_RENDER_MODE_BITMAP,
+                                      FONT_SIZE_S, LV_FREETYPE_FONT_STYLE_NORMAL);
+    _font_xs = lv_freetype_font_create(FONTS_PREFIX "Roboto-Regular.ttf", LV_FREETYPE_FONT_RENDER_MODE_BITMAP,
+                                       FONT_SIZE_XS, LV_FREETYPE_FONT_STYLE_NORMAL);
 
-    _font_l_mdi = lv_freetype_font_create("../../fonts/materialdesignicons-webfont.ttf",
-                                          LV_FREETYPE_FONT_RENDER_MODE_BITMAP, 220, LV_FREETYPE_FONT_STYLE_NORMAL);
-    _font_m_mdi = lv_freetype_font_create("../../fonts/materialdesignicons-webfont.ttf",
-                                          LV_FREETYPE_FONT_RENDER_MODE_BITMAP, 160, LV_FREETYPE_FONT_STYLE_NORMAL);
-    _font_xs_mdi = lv_freetype_font_create("../../fonts/materialdesignicons-webfont.ttf",
-                                           LV_FREETYPE_FONT_RENDER_MODE_BITMAP, 90, LV_FREETYPE_FONT_STYLE_NORMAL);
+    _font_l_mdi =
+        lv_freetype_font_create(FONTS_PREFIX "materialdesignicons-webfont.ttf", LV_FREETYPE_FONT_RENDER_MODE_BITMAP,
+                                FONT_SIZE_L, LV_FREETYPE_FONT_STYLE_NORMAL);
+    _font_m_mdi =
+        lv_freetype_font_create(FONTS_PREFIX "materialdesignicons-webfont.ttf", LV_FREETYPE_FONT_RENDER_MODE_BITMAP,
+                                FONT_SIZE_M, LV_FREETYPE_FONT_STYLE_NORMAL);
+    _font_xs_mdi =
+        lv_freetype_font_create(FONTS_PREFIX "materialdesignicons-webfont.ttf", LV_FREETYPE_FONT_RENDER_MODE_BITMAP,
+                                FONT_SIZE_XS, LV_FREETYPE_FONT_STYLE_NORMAL);
 }
 
 void ClockUI::do_render(lv_obj_t* parent) {
@@ -72,9 +81,9 @@ void ClockUI::do_render(lv_obj_t* parent) {
 
     // Add stats.
 
-    _outside_temp = create_stat(bottom_cont, 0, 0, 2, true, true, "�C", MDI_THERMOMETER);
-    _min_temp = create_stat(bottom_cont, 1, 0, 1, false, false, "�C", MDI_THERMOMETER_LOW);
-    _max_temp = create_stat(bottom_cont, 2, 0, 1, false, false, "�C", MDI_THERMOMETER_HIGH);
+    _outside_temp = create_stat(bottom_cont, 0, 0, 2, true, true, "\U000000B0C", MDI_THERMOMETER);
+    _min_temp = create_stat(bottom_cont, 1, 0, 1, false, false, "\U000000B0C", MDI_THERMOMETER_LOW);
+    _max_temp = create_stat(bottom_cont, 2, 0, 1, false, false, "\U000000B0C", MDI_THERMOMETER_HIGH);
     _humidity = create_stat(bottom_cont, 1, 1, 1, false, false, "%", MDI_WATER_PERCENT);
     _printer = create_stat(bottom_cont, 2, 1, 1, false, false, "%", MDI_PRINTER_3D);
 
@@ -159,8 +168,15 @@ ClockUI::Stat ClockUI::create_stat(lv_obj_t* cont, int col, int row, int row_spa
 
 void ClockUI::update() {
     const auto now = chrono::system_clock::now();
-    auto now_time_t = chrono::system_clock::to_time_t(now);
-    auto now_tm = localtime(&now_time_t);
+    auto now_time = chrono::system_clock::to_time_t(now);
+
+    if (_last_update_time != 0 && (now_time % 60 != 0 || now_time == _last_update_time)) {
+        return;
+    }
+
+    _last_update_time = now_time;
+
+    auto now_tm = localtime(&now_time);
     lv_label_set_text(_clock_label, strformat("%02d:%02d", now_tm->tm_hour, now_tm->tm_min).c_str());
 
 #ifndef LV_SIMULATOR
