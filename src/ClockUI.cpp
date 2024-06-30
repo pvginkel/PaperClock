@@ -52,6 +52,8 @@ void ClockUI::do_render(lv_obj_t* parent) {
 
     auto right_cont = lv_obj_create(outer_cont);
     reset_layout_container_styles(right_cont);
+    lv_obj_set_style_pad_right(right_cont, lv_dpx(30), LV_PART_MAIN);
+    lv_obj_set_style_pad_top(right_cont, lv_dpx(30), LV_PART_MAIN);
     static int32_t right_cont_col_desc[] = {LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
     static int32_t right_cont_row_desc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
     lv_obj_set_grid_dsc_array(right_cont, right_cont_col_desc, right_cont_row_desc);
@@ -61,6 +63,8 @@ void ClockUI::do_render(lv_obj_t* parent) {
 
     auto bottom_cont = lv_obj_create(outer_cont);
     reset_layout_container_styles(bottom_cont);
+    lv_obj_set_style_pad_right(bottom_cont, lv_dpx(30), LV_PART_MAIN);
+    lv_obj_set_style_pad_bottom(bottom_cont, lv_dpx(30), LV_PART_MAIN);
     static int32_t bottom_cont_col_desc[] = {LV_GRID_FR(1), LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
     static int32_t bottom_cont_row_desc[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
     lv_obj_set_grid_dsc_array(bottom_cont, bottom_cont_col_desc, bottom_cont_row_desc);
