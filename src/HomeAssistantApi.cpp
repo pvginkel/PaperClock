@@ -10,8 +10,15 @@ static constexpr auto QOS_EXACTLY_ONE = 2;
 
 LOG_TAG(HomeAssistantApi);
 
-bool HomeAssistantApi::begin() {
+void HomeAssistantApi::begin() { connect(); }
+
+void HomeAssistantApi::connect() {
+    _client = nullptr;
+
     MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
+    MQTTClient_willOptions will_opts = MQTTClient_willOptions_initializer;
+    MQTTClient_deliveryToken token;
+    MQTTClient_message pubmsg = MQTTClient_message_initializer;
     int rc;
 
     conn_opts.username = _user_name.c_str();
@@ -20,7 +27,7 @@ bool HomeAssistantApi::begin() {
     if ((rc = MQTTClient_create(&_client, _address.c_str(), _client_id.c_str(), MQTTCLIENT_PERSISTENCE_NONE,
                                 nullptr)) != MQTTCLIENT_SUCCESS) {
         LOGE(TAG, "MQTTClient_create failed with %d", rc);
-        return false;
+        goto failure;
     }
 
     if ((rc = MQTTClient_setCallbacks(
@@ -42,13 +49,11 @@ bool HomeAssistantApi::begin() {
                  });
              })) != MQTTCLIENT_SUCCESS) {
         LOGE(TAG, "MQTTClient_setCallbacks failed with %d", rc);
-        return false;
+        goto failure;
     }
 
     conn_opts.keepAliveInterval = 20;
     conn_opts.cleansession = 1;
-
-    MQTTClient_willOptions will_opts = MQTTClient_willOptions_initializer;
 
     will_opts.message = "offline";
     will_opts.topicName = TOPIC_PREFIX "state";
@@ -59,16 +64,13 @@ bool HomeAssistantApi::begin() {
 
     if ((rc = MQTTClient_connect(_client, &conn_opts)) != MQTTCLIENT_SUCCESS) {
         LOGE(TAG, "MQTTClient_connect failed with %d", rc);
-        return false;
+        goto failure;
     }
 
     if ((rc = MQTTClient_subscribe(_client, TOPIC_PREFIX "#", QOS_ONE)) != MQTTCLIENT_SUCCESS) {
         LOGE(TAG, "MQTTClient_connect failed with %d", rc);
-        return false;
+        goto failure;
     }
-
-    MQTTClient_deliveryToken token;
-    MQTTClient_message pubmsg = MQTTClient_message_initializer;
 
     pubmsg.payload = (void *)"online";
     pubmsg.payloadlen = (int)strlen((char *)pubmsg.payload);
@@ -77,16 +79,49 @@ bool HomeAssistantApi::begin() {
 
     if ((rc = MQTTClient_publishMessage(_client, TOPIC_PREFIX "state", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
         LOGE(TAG, "MQTTClient_publishMessage failed with %d", rc);
-        return false;
+        goto failure;
     }
+    return;
 
-    return true;
+failure:
+    disconnect();
+
+    const auto RECONNECT_SECONDS = 5;
+
+    LOGI(TAG, "Reconnecting in %d seconds...", RECONNECT_SECONDS);
+
+    lv_timer_create(
+        [](lv_timer_t *timer) {
+            ((HomeAssistantApi *)timer->user_data)->connect();
+            lv_timer_delete(timer);
+        },
+        RECONNECT_SECONDS * 1000, this);
 }
 
-void HomeAssistantApi::connection_lost(char *cause) { LOGE(TAG, "Connected lost: %s", cause); }
+void HomeAssistantApi::disconnect() {
+    if (!_client) {
+        return;
+    }
+
+    int rc;
+
+    if ((rc = MQTTClient_disconnect(_client, 10'000)) != MQTTCLIENT_SUCCESS) {
+        LOGE(TAG, "MQTTClient_disconnect failed with %d", rc);
+    }
+
+    MQTTClient_destroy(&_client);
+
+    _client = nullptr;
+}
+
+void HomeAssistantApi::connection_lost(char *cause) {
+    LOGE(TAG, "Connected lost: %s; reconnecting...", cause);
+
+    connect();
+}
 
 void HomeAssistantApi::message_arrived(char *topic_name, int topic_len, MQTTClient_message *message) {
-    // LOGI(TAG, "Received on topic %s payload %s", topic_name, (char *)message->payload);
+    LOGD(TAG, "Received on topic %s payload %s", topic_name, (char *)message->payload);
 
     if (strncmp(topic_name, TOPIC_PREFIX, strlen(TOPIC_PREFIX)) == 0) {
         auto sub_topic = topic_name + strlen(TOPIC_PREFIX);
@@ -144,12 +179,4 @@ void HomeAssistantApi::message_arrived(char *topic_name, int topic_len, MQTTClie
 
 void HomeAssistantApi::delivered(MQTTClient_deliveryToken dt) {}
 
-void HomeAssistantApi::end() {
-    int rc;
-
-    if ((rc = MQTTClient_disconnect(_client, 10'000)) != MQTTCLIENT_SUCCESS) {
-        LOGE(TAG, "MQTTClient_disconnect failed with %d", rc);
-    }
-
-    MQTTClient_destroy(&_client);
-}
+void HomeAssistantApi::end() { disconnect(); }

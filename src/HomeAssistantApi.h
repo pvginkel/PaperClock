@@ -37,7 +37,7 @@ public:
 
     {}
 
-    bool begin();
+    void begin();
     void end();
     void on_screen_on_changed(function<void(bool)> func) { _screen_on_changed.add(func); }
 
@@ -58,7 +58,8 @@ public:
     double get_printer_voortgang() { return _printer_vooruitgang; }
 
 private:
-    bool subscribe(const string& topic, int qos);
+    void connect();
+    void disconnect();
     void connection_lost(char* cause);
     void message_arrived(char* topic_name, int topic_len, MQTTClient_message* message);
     void delivered(MQTTClient_deliveryToken dt);

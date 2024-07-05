@@ -25,10 +25,7 @@ void Application::begin() {
     }
 
     _api = new HomeAssistantApi(&_queue, address, user_name, password);
-    if (!_api->begin()) {
-        LOGE(TAG, "Failed to begin API");
-        exit(2);
-    }
+    _api->begin();
 
     _api->on_screen_on_changed([this](bool on) {
         if (on) {

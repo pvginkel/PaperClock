@@ -19,7 +19,11 @@ static void with_mutex(mutex& mutex, function<void()> func) {
 #define LOGE(tag, format, ...) printf("\033[31mERROR [%s] " format "\033[0m\n", tag, ##__VA_ARGS__)
 #define LOGW(tag, format, ...) printf("\033[33mWARN [%s] " format "\033[0m\n", tag, ##__VA_ARGS__)
 #define LOGI(tag, format, ...) printf("\033[97mINFO [%s] " format "\033[0m\n", tag, ##__VA_ARGS__)
+#if NDEBUG
+#define LOGD(tag, format, ...)
+#else
 #define LOGD(tag, format, ...) printf("DEBUG [%s] " format "\n", tag, ##__VA_ARGS__)
+#endif
 
 class cJSON_Data {
     cJSON* _data;
