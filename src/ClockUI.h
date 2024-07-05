@@ -17,8 +17,6 @@ class ClockUI : public LvglUI {
         lv_obj_t* sub_label;
     };
 
-    Tasks* _tasks;
-    Queue* _queue;
     lv_font_t* _font_xl;
     lv_font_t* _font_l;
     lv_font_t* _font_l_mdi;
@@ -41,8 +39,7 @@ class ClockUI : public LvglUI {
     Stat _printer;
 
 public:
-    ClockUI(Tasks* tasks, Queue* queue, HomeAssistantApi* api)
-        : _tasks(tasks), _queue(queue), _api(api), _api_cookie(0) {}
+    ClockUI(HomeAssistantApi* api) : _api(api), _api_cookie(0) {}
 
     void update();
 

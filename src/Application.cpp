@@ -24,7 +24,7 @@ void Application::begin() {
         exit(1);
     }
 
-    _api = new HomeAssistantApi(address, user_name, password);
+    _api = new HomeAssistantApi(&_queue, address, user_name, password);
     if (!_api->begin()) {
         LOGE(TAG, "Failed to begin API");
         exit(2);
@@ -59,7 +59,7 @@ void Application::begin() {
     _test_clock->begin();
     _test_clock->render();
 #else
-    _clock = new ClockUI(&_tasks, &_queue, _api);
+    _clock = new ClockUI(_api);
 
     _clock->begin();
     _clock->render();

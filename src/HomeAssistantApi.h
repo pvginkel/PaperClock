@@ -9,6 +9,7 @@ class HomeAssistantApi {
     string _user_name;
     string _password;
     int _update_cookie;
+    Queue* _queue;
     MQTTClient _client;
     string _forecast_hour_1_image;
     int _forecast_hour_1_wind_speed;
@@ -27,8 +28,9 @@ class HomeAssistantApi {
     Callback<bool> _screen_on_changed;
 
 public:
-    HomeAssistantApi(string address, string user_name, string password)
-        : _address(std::move(address)),
+    HomeAssistantApi(Queue* queue, string address, string user_name, string password)
+        : _queue(queue),
+          _address(std::move(address)),
           _client_id(strformat("session%d", rand())),
           _user_name(std::move(user_name)),
           _password(std::move(password))
@@ -58,6 +60,6 @@ public:
 private:
     bool subscribe(const string& topic, int qos);
     void connection_lost(char* cause);
-    int message_arrived(char* topic_name, int topic_len, MQTTClient_message* message);
+    void message_arrived(char* topic_name, int topic_len, MQTTClient_message* message);
     void delivered(MQTTClient_deliveryToken dt);
 };

@@ -24,12 +24,23 @@ bool HomeAssistantApi::begin() {
     }
 
     if ((rc = MQTTClient_setCallbacks(
-             _client, this, [](void *context, char *cause) { ((HomeAssistantApi *)context)->connection_lost(cause); },
-             [](void *context, char *topicName, int topicLen, MQTTClient_message *message) {
-                 return ((HomeAssistantApi *)context)->message_arrived(topicName, topicLen, message);
+             _client, this,
+             [](void *context, char *cause) {
+                 ((HomeAssistantApi *)context)->_queue->enqueue([context, cause]() {
+                     ((HomeAssistantApi *)context)->connection_lost(cause);
+                 });
              },
-             [](void *context, MQTTClient_deliveryToken dt) { ((HomeAssistantApi *)context)->delivered(dt); })) !=
-        MQTTCLIENT_SUCCESS) {
+             [](void *context, char *topicName, int topicLen, MQTTClient_message *message) {
+                 ((HomeAssistantApi *)context)->_queue->enqueue([context, topicName, topicLen, message]() {
+                     ((HomeAssistantApi *)context)->message_arrived(topicName, topicLen, message);
+                 });
+                 return 1;
+             },
+             [](void *context, MQTTClient_deliveryToken dt) {
+                 ((HomeAssistantApi *)context)->_queue->enqueue([context, dt]() {
+                     ((HomeAssistantApi *)context)->delivered(dt);
+                 });
+             })) != MQTTCLIENT_SUCCESS) {
         LOGE(TAG, "MQTTClient_setCallbacks failed with %d", rc);
         return false;
     }
@@ -74,7 +85,7 @@ bool HomeAssistantApi::begin() {
 
 void HomeAssistantApi::connection_lost(char *cause) { LOGE(TAG, "Connected lost: %s", cause); }
 
-int HomeAssistantApi::message_arrived(char *topic_name, int topic_len, MQTTClient_message *message) {
+void HomeAssistantApi::message_arrived(char *topic_name, int topic_len, MQTTClient_message *message) {
     // LOGI(TAG, "Received on topic %s payload %s", topic_name, (char *)message->payload);
 
     if (strncmp(topic_name, TOPIC_PREFIX, strlen(TOPIC_PREFIX)) == 0) {
@@ -129,8 +140,6 @@ int HomeAssistantApi::message_arrived(char *topic_name, int topic_len, MQTTClien
 
     MQTTClient_free(topic_name);
     MQTTClient_freeMessage(&message);
-
-    return 1;
 }
 
 void HomeAssistantApi::delivered(MQTTClient_deliveryToken dt) {}
