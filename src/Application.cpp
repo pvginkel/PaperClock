@@ -27,6 +27,7 @@ void Application::begin() {
     _api = new HomeAssistantApi(&_queue, address, user_name, password);
     _api->begin();
 
+#ifndef LV_SIMULATOR
     _api->on_screen_on_changed([this](bool on) {
         if (on) {
             _current_screen =
@@ -52,6 +53,7 @@ void Application::begin() {
                 1000, this);
         }
     });
+#endif
 
 #ifdef TEST_CLOCK
     _test_clock = new TestClockUI();

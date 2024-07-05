@@ -10,6 +10,8 @@ static constexpr auto QOS_EXACTLY_ONE = 2;
 
 LOG_TAG(HomeAssistantApi);
 
+#ifndef LV_SIMULATOR
+
 void HomeAssistantApi::begin() {
 #if NDEBUG
     MQTTClient_setTraceLevel(MQTTCLIENT_TRACE_ERROR);
@@ -194,3 +196,11 @@ void HomeAssistantApi::message_arrived(char *topic_name, int topic_len, MQTTClie
 void HomeAssistantApi::delivered(MQTTClient_deliveryToken dt) {}
 
 void HomeAssistantApi::end() { disconnect(); }
+
+#else
+
+void HomeAssistantApi::begin() {}
+
+void HomeAssistantApi::end() {}
+
+#endif
