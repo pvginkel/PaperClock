@@ -199,8 +199,135 @@ void HomeAssistantApi::end() { disconnect(); }
 
 #else
 
-void HomeAssistantApi::begin() {}
+void HomeAssistantApi::begin() {
+    parse_hour_forecast(
+        R"({"entity_id": "sensor.weerlive_forecast_hour_1", "state": "17", "attributes": {"image": "regen", "temp": 16, "windbft": 3, "friendly_name": "WeerLive Forecast Hour 1"}, "last_changed": "2024-07-05T15:34:53.398432+00:00", "last_reported": "2024-07-05T15:34:53.398432+00:00", "last_updated": "2024-07-05T15:34:53.398432+00:00", "context": {"id": "01J21RHDPPEEYXWAJY1KT4670R", "parent_id": null, "user_id": null}})",
+        _forecast_hours[0]);
+    parse_day_forecast(
+        R"({"entity_id": "sensor.weerlive_forecast_day_1", "state": "5", "attributes": {"image": "halfbewolkt", "min_temp": 16, "max_temp": 17, "neersl_perc_dag": 20, "zond_perc_dag": 22, "friendly_name": "WeerLive Forecast Day 1"}, "last_changed": "2024-07-05T15:34:53.400550+00:00", "last_reported": "2024-07-05T15:34:53.400550+00:00", "last_updated": "2024-07-05T15:34:53.400550+00:00", "context": {"id": "01J21RHDPRZGB0E6Y8V9HVK1DD", "parent_id": null, "user_id": null}})",
+        _forecast_days[0]);
+
+    for (auto i = 1; i < 4; i++) {
+        _forecast_hours[i] = _forecast_hours[0];
+        _forecast_hours[i].hour += i;
+    }
+
+    for (auto i = 1; i < 5; i++) {
+        _forecast_days[i] = _forecast_days[0];
+        _forecast_days[i].weekday = (_forecast_days[i].weekday + i) % 7;
+        _forecast_days[i].weekday_code = get_weekday_code(_forecast_days[i].weekday);
+    }
+}
 
 void HomeAssistantApi::end() {}
 
 #endif
+
+void HomeAssistantApi::parse_hour_forecast(const char *json, ForecastHour &forecast) {
+    auto root = cJSON_Parse(json);
+    if (root == nullptr) {
+        return;
+    }
+
+    forecast.hour = 0;
+    forecast.image = "";
+    forecast.temperature = 0;
+    forecast.wind_speed = 0;
+
+    auto state = cJSON_GetObjectItemCaseSensitive(root, "state");
+    if (cJSON_IsString(state) && (state->valuestring != nullptr)) {
+        forecast.hour = atoi(state->valuestring);
+    }
+
+    auto attributes = cJSON_GetObjectItemCaseSensitive(root, "attributes");
+    if (attributes != nullptr) {
+        auto image = cJSON_GetObjectItemCaseSensitive(attributes, "image");
+        if (cJSON_IsString(image) && image->valuestring != nullptr) {
+            forecast.image = image->valuestring;
+        }
+
+        auto temp = cJSON_GetObjectItemCaseSensitive(attributes, "temp");
+        if (cJSON_IsNumber(temp)) {
+            forecast.temperature = temp->valuedouble;
+        }
+
+        // Get the wind speed
+        cJSON *windbft = cJSON_GetObjectItemCaseSensitive(attributes, "windbft");
+        if (cJSON_IsNumber(windbft)) {
+            forecast.wind_speed = windbft->valueint;
+        }
+    }
+
+    cJSON_Delete(root);
+}
+
+void HomeAssistantApi::parse_day_forecast(const char *json, ForecastDay &forecast) {
+    forecast.weekday = 0;
+    forecast.weekday_code = "";
+    forecast.min_temperature = 0;
+    forecast.max_temperature = 0;
+    forecast.percent_rain = 0;
+    forecast.percent_sun = 0;
+    forecast.image = "";
+
+    auto root = cJSON_Parse(json);
+    if (root == nullptr) {
+        return;
+    }
+
+    auto state = cJSON_GetObjectItemCaseSensitive(root, "state");
+    if (cJSON_IsString(state) && state->valuestring != nullptr) {
+        forecast.weekday = atoi(state->valuestring);
+        forecast.weekday_code = get_weekday_code(forecast.weekday);
+    }
+
+    auto attributes = cJSON_GetObjectItemCaseSensitive(root, "attributes");
+    if (attributes != nullptr) {
+        auto image = cJSON_GetObjectItemCaseSensitive(attributes, "image");
+        if (cJSON_IsString(image) && image->valuestring != nullptr) {
+            forecast.image = image->valuestring;
+        }
+
+        auto min_temp = cJSON_GetObjectItemCaseSensitive(attributes, "min_temp");
+        if (cJSON_IsNumber(min_temp)) {
+            forecast.min_temperature = min_temp->valuedouble;
+        }
+
+        auto max_temp = cJSON_GetObjectItemCaseSensitive(attributes, "max_temp");
+        if (cJSON_IsNumber(max_temp)) {
+            forecast.max_temperature = max_temp->valuedouble;
+        }
+
+        auto neersl_perc_dag = cJSON_GetObjectItemCaseSensitive(attributes, "neersl_perc_dag");
+        if (cJSON_IsNumber(neersl_perc_dag)) {
+            forecast.percent_rain = neersl_perc_dag->valuedouble;
+        }
+
+        auto zond_perc_dag = cJSON_GetObjectItemCaseSensitive(attributes, "zond_perc_dag");
+        if (cJSON_IsNumber(zond_perc_dag)) {
+            forecast.percent_sun = zond_perc_dag->valuedouble;
+        }
+    }
+
+    cJSON_Delete(root);
+}
+
+string HomeAssistantApi::get_weekday_code(int weekday) {
+    switch (weekday) {
+        case 0:
+            return "zo";
+        case 1:
+            return "ma";
+        case 2:
+            return "di";
+        case 3:
+            return "wo";
+        case 4:
+            return "do";
+        case 5:
+            return "vr";
+        case 6:
+        default:
+            return "za";
+    }
+}
