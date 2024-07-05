@@ -8,7 +8,7 @@
 
 LOG_TAG(ClockUI);
 
-static constexpr auto FONT_SIZE_XL = 440;
+static constexpr auto FONT_SIZE_XL = 510;
 static constexpr auto FONT_SIZE_L = 200;
 static constexpr auto FONT_SIZE_M = 140;
 static constexpr auto FONT_SIZE_S = 110;
@@ -52,7 +52,7 @@ void ClockUI::do_render(lv_obj_t* parent) {
 
     auto hours_cont = lv_obj_create(outer_cont);
     reset_layout_container_styles(hours_cont);
-    lv_obj_set_style_pad_all(hours_cont, lv_dpx(50), LV_PART_MAIN);
+    lv_obj_set_style_pad_hor(hours_cont, lv_dpx(50), LV_PART_MAIN);
     static int32_t right_cont_col_desc[] = {LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
     static int32_t right_cont_row_desc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
     lv_obj_set_grid_dsc_array(hours_cont, right_cont_col_desc, right_cont_row_desc);
@@ -61,8 +61,7 @@ void ClockUI::do_render(lv_obj_t* parent) {
 
     auto days_cont = lv_obj_create(outer_cont);
     reset_layout_container_styles(days_cont);
-    lv_obj_set_style_pad_right(days_cont, lv_dpx(30), LV_PART_MAIN);
-    lv_obj_set_style_pad_bottom(days_cont, lv_dpx(30), LV_PART_MAIN);
+    lv_obj_set_style_pad_all(days_cont, lv_dpx(30), LV_PART_MAIN);
     static int32_t middle_cont_col_desc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_CONTENT,
                                              LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
     static int32_t middle_cont_row_desc[] = {LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
@@ -72,8 +71,8 @@ void ClockUI::do_render(lv_obj_t* parent) {
 
     auto stats_cont = lv_obj_create(outer_cont);
     reset_layout_container_styles(stats_cont);
-    lv_obj_set_style_pad_right(stats_cont, lv_dpx(30), LV_PART_MAIN);
-    lv_obj_set_style_pad_bottom(stats_cont, lv_dpx(30), LV_PART_MAIN);
+    lv_obj_set_style_pad_hor(stats_cont, lv_dpx(50), LV_PART_MAIN);
+    lv_obj_set_style_pad_ver(stats_cont, lv_dpx(30), LV_PART_MAIN);
     static int32_t bottom_cont_col_desc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
     static int32_t bottom_cont_row_desc[] = {LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
     lv_obj_set_grid_dsc_array(stats_cont, bottom_cont_col_desc, bottom_cont_row_desc);
@@ -81,14 +80,14 @@ void ClockUI::do_render(lv_obj_t* parent) {
     // Clock.
 
     _clock_label = lv_label_create(outer_cont);
-    lv_obj_set_style_text_align(_clock_label, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN);
+    lv_obj_set_style_text_align(_clock_label, LV_TEXT_ALIGN_LEFT, LV_PART_MAIN);
     lv_obj_set_style_text_font(_clock_label, _font_xl, LV_PART_MAIN);
 
     // Layout of the components in the grid.
 
-    lv_obj_set_grid_cell(stats_cont, LV_GRID_ALIGN_CENTER, 0, 1, LV_GRID_ALIGN_START, 0, 1);
-    lv_obj_set_grid_cell(_clock_label, LV_GRID_ALIGN_CENTER, 0, 1, LV_GRID_ALIGN_CENTER, 1, 1);
-    lv_obj_set_grid_cell(hours_cont, LV_GRID_ALIGN_START, 1, 1, LV_GRID_ALIGN_CENTER, 0, 2);
+    lv_obj_set_grid_cell(stats_cont, LV_GRID_ALIGN_START, 0, 1, LV_GRID_ALIGN_START, 0, 1);
+    lv_obj_set_grid_cell(_clock_label, LV_GRID_ALIGN_END, 0, 1, LV_GRID_ALIGN_CENTER, 1, 1);
+    lv_obj_set_grid_cell(hours_cont, LV_GRID_ALIGN_START, 1, 1, LV_GRID_ALIGN_END, 0, 2);
     lv_obj_set_grid_cell(days_cont, LV_GRID_ALIGN_CENTER, 0, 2, LV_GRID_ALIGN_START, 2, 1);
 
     // Add daily forecast icons.
@@ -145,7 +144,7 @@ ClockUI::ForecastDayIcon ClockUI::create_forecast_day_icon(lv_obj_t* cont, int i
 ClockUI::ForecastHourIcon ClockUI::create_forecast_hour_icon(lv_obj_t* cont, int index) {
     auto icon_cont = lv_obj_create(cont);
     reset_layout_container_styles(icon_cont);
-    lv_obj_set_style_pad_all(icon_cont, lv_dpx(15), LV_PART_MAIN);
+    lv_obj_set_style_pad_all(icon_cont, lv_dpx(25), LV_PART_MAIN);
     static int32_t icon_cont_col_desc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
     static int32_t icon_cont_row_desc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
     lv_obj_set_grid_dsc_array(icon_cont, icon_cont_col_desc, icon_cont_row_desc);
@@ -182,13 +181,13 @@ ClockUI::Stat ClockUI::create_stat(lv_obj_t* cont, int col, int row, int row_spa
 
     const auto stat_cont = lv_obj_create(cont);
     reset_layout_container_styles(stat_cont);
-    lv_obj_set_style_pad_hor(stat_cont, lv_dpx(20), LV_PART_MAIN);
+    lv_obj_set_style_pad_hor(stat_cont, lv_dpx(30), LV_PART_MAIN);
     lv_obj_set_style_pad_ver(stat_cont, lv_dpx(6), LV_PART_MAIN);
     static int32_t stat_cont_col_desc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_CONTENT,
                                            LV_GRID_TEMPLATE_LAST};
     static int32_t stat_cont_row_desc[] = {LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
     lv_obj_set_grid_dsc_array(stat_cont, stat_cont_col_desc, stat_cont_row_desc);
-    lv_obj_set_grid_cell(stat_cont, LV_GRID_ALIGN_START, col, 1, LV_GRID_ALIGN_CENTER, row, row_span);
+    lv_obj_set_grid_cell(stat_cont, LV_GRID_ALIGN_START, col, 1, LV_GRID_ALIGN_START, row, row_span);
 
     Stat result;
 
@@ -278,7 +277,10 @@ void ClockUI::do_update() {
 
         lv_label_set_text(_forecast_days[i].icon_label, classify_weather_image(day_forecast.image));
         lv_label_set_text(_forecast_days[i].weekday_label, day_forecast.weekday_code.c_str());
-        lv_label_set_text(_forecast_days[i].temperature_label, strformat("%.0f\U000000B0/%.0f\U000000B0", day_forecast.max_temperature, day_forecast.min_temperature).c_str());
+        lv_label_set_text(
+            _forecast_days[i].temperature_label,
+            strformat("%.0f\U000000B0/%.0f\U000000B0", day_forecast.max_temperature, day_forecast.min_temperature)
+                .c_str());
     }
 
     auto outside_temperature_half_rounded = round(_api->get_outside_temperature() * 2) / 2;

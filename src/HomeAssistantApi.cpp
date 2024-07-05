@@ -144,41 +144,35 @@ void HomeAssistantApi::message_arrived(char *topic_name, int topic_len, MQTTClie
 
         if (strcmp(sub_topic, "set/screen_on") == 0) {
             _screen_on_changed.call(strcmp((char *)message->payload, "true") == 0);
-        } else if (strcmp(sub_topic, "set/forecast_hour_1_image") == 0) {
-            _forecast_hour_1_image = (char *)message->payload;
+        } else if (strcmp(sub_topic, "set/forecast_hour_1") == 0) {
+            parse_hour_forecast((char *)message->payload, _forecast_hours[0]);
             _update_cookie++;
-        } else if (strcmp(sub_topic, "set/forecast_hour_1_wind_speed") == 0) {
-            _forecast_hour_1_wind_speed = atoi((char *)message->payload);
+        } else if (strcmp(sub_topic, "set/forecast_hour_2") == 0) {
+            parse_hour_forecast((char *)message->payload, _forecast_hours[1]);
             _update_cookie++;
-        } else if (strcmp(sub_topic, "set/forecast_hour_1_hour") == 0) {
-            _forecast_hour_1_hour = atoi((char *)message->payload);
+        } else if (strcmp(sub_topic, "set/forecast_hour_3") == 0) {
+            parse_hour_forecast((char *)message->payload, _forecast_hours[2]);
             _update_cookie++;
-        } else if (strcmp(sub_topic, "set/forecast_hour_2_image") == 0) {
-            _forecast_hour_2_image = (char *)message->payload;
+        } else if (strcmp(sub_topic, "set/forecast_hour_4") == 0) {
+            parse_hour_forecast((char *)message->payload, _forecast_hours[3]);
             _update_cookie++;
-        } else if (strcmp(sub_topic, "set/forecast_hour_2_wind_speed") == 0) {
-            _forecast_hour_2_wind_speed = atoi((char *)message->payload);
+        } else if (strcmp(sub_topic, "set/forecast_day_1") == 0) {
+            parse_day_forecast((char *)message->payload, _forecast_days[0]);
             _update_cookie++;
-        } else if (strcmp(sub_topic, "set/forecast_hour_2_hour") == 0) {
-            _forecast_hour_2_hour = atoi((char *)message->payload);
+        } else if (strcmp(sub_topic, "set/forecast_day_2") == 0) {
+            parse_day_forecast((char *)message->payload, _forecast_days[1]);
             _update_cookie++;
-        } else if (strcmp(sub_topic, "set/forecast_hour_3_image") == 0) {
-            _forecast_hour_3_image = (char *)message->payload;
+        } else if (strcmp(sub_topic, "set/forecast_day_3") == 0) {
+            parse_day_forecast((char *)message->payload, _forecast_days[2]);
             _update_cookie++;
-        } else if (strcmp(sub_topic, "set/forecast_hour_3_wind_speed") == 0) {
-            _forecast_hour_3_wind_speed = atoi((char *)message->payload);
+        } else if (strcmp(sub_topic, "set/forecast_day_4") == 0) {
+            parse_day_forecast((char *)message->payload, _forecast_days[3]);
             _update_cookie++;
-        } else if (strcmp(sub_topic, "set/forecast_hour_3_hour") == 0) {
-            _forecast_hour_3_hour = atoi((char *)message->payload);
+        } else if (strcmp(sub_topic, "set/forecast_day_5") == 0) {
+            parse_day_forecast((char *)message->payload, _forecast_days[4]);
             _update_cookie++;
         } else if (strcmp(sub_topic, "set/outside_temperature") == 0) {
             _outside_temperature = atof((char *)message->payload);
-            _update_cookie++;
-        } else if (strcmp(sub_topic, "set/forecast_temperature_low") == 0) {
-            _forecast_temperature_low = atof((char *)message->payload);
-            _update_cookie++;
-        } else if (strcmp(sub_topic, "set/forecast_temperature_high") == 0) {
-            _forecast_temperature_high = atof((char *)message->payload);
             _update_cookie++;
         } else if (strcmp(sub_topic, "set/woonkamer_humidity") == 0) {
             _woonkamer_humidity = atof((char *)message->payload);
