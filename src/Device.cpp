@@ -36,7 +36,7 @@ void Device::flush_cb(lv_display_t* disp, const lv_area_t* area, uint8_t* px_map
     // Every INIT_DRAW_INTERVAL draws we clear the screen and update the whole screen.
 
     if (_draw_count++ % INIT_DRAW_INTERVAL == 0) {
-        LOGI(TAG, "Performing full refresh");
+        LOGD(TAG, "Performing full refresh");
 
         left = 0;
         top = 0;
@@ -47,6 +47,8 @@ void Device::flush_cb(lv_display_t* disp, const lv_area_t* area, uint8_t* px_map
         // the command, so it looks like it's possible, but it doesn't work.
 
         EPD_IT8951_Clear_Refresh(_device_info, _init_target_memory_addr, INIT_Mode, true);
+    } else {
+        LOGD(TAG, "Performing partial refresh");
     }
 
     // There's still a bug somewhere that requires updates to be done in whole

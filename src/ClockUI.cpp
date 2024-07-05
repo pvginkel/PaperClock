@@ -204,6 +204,12 @@ void ClockUI::update() {
         return;
     }
 
+    LOGD(TAG, "Received new data, redrawing the screen");
+
+    // We don't want the screen to be update in parts. If we get new values, just
+    // invalidate the whole screen to ensure the screen is drawn in one.
+    lv_obj_invalidate(lv_screen_active());
+
     _api_cookie = update_cookie;
 
 #endif
