@@ -41,11 +41,10 @@ class ClockUI : public LvglUI {
 public:
     ClockUI(HomeAssistantApi* api) : _api(api), _api_cookie(0) {}
 
-    void update();
-
 protected:
     void do_begin() override;
     void do_render(lv_obj_t* parent) override;
+    void do_update() override;
 
 private:
     ForecastIcon create_forecast_icon(lv_obj_t* cont, int row);

@@ -10,9 +10,8 @@ class TestClockUI : public LvglUI {
 public:
     TestClockUI() : _font_xl(nullptr), _clock_label(nullptr), _last_time(0) {}
 
-    void update();
-
 protected:
     void do_begin() override;
     void do_render(lv_obj_t* parent) override;
+    void do_update() override;
 };

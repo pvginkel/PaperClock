@@ -30,10 +30,12 @@ public:
 
     void begin();
     void render();
+    void update();
 
 protected:
     virtual void do_render(lv_obj_t* parent) = 0;
     virtual void do_begin() {}
+    virtual void do_update() {}
 
     lv_coord_t pw(double value) const { return lv_coord_t(LV_HOR_RES * (value / 100)); }
     lv_coord_t ph(double value) const { return lv_coord_t(LV_VER_RES * (value / 100)); }

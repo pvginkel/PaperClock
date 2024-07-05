@@ -173,7 +173,7 @@ ClockUI::Stat ClockUI::create_stat(lv_obj_t* cont, int col, int row, int row_spa
     return result;
 }
 
-void ClockUI::update() {
+void ClockUI::do_update() {
     const auto now = chrono::system_clock::now();
     auto now_time = chrono::system_clock::to_time_t(now);
 

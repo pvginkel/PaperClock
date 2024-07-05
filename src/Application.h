@@ -21,6 +21,7 @@ public:
     Device* _device;
     Queue _queue;
     Tasks _tasks;
+    LvglUI* _current_screen;
     ClockUI* _clock;
     ShutdownUI* _shutdown;
 #ifdef TEST_CLOCK

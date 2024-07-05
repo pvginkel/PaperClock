@@ -32,7 +32,7 @@ void TestClockUI::do_render(lv_obj_t* parent) {
     update();
 }
 
-void TestClockUI::update() {
+void TestClockUI::do_update() {
     const auto now = chrono::system_clock::now();
     auto now_time_t = chrono::system_clock::to_time_t(now);
 

@@ -114,3 +114,5 @@ void LvglUI::reset_layout_container_styles(lv_obj_t* cont) {
     lv_obj_set_style_pad_all(cont, 0, LV_PART_MAIN);
     lv_obj_set_size(cont, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 }
+
+void LvglUI::update() { do_update(); }

@@ -10,7 +10,21 @@ static constexpr auto QOS_EXACTLY_ONE = 2;
 
 LOG_TAG(HomeAssistantApi);
 
-void HomeAssistantApi::begin() { connect(); }
+void HomeAssistantApi::begin() {
+#if NDEBUG
+    MQTTClient_setTraceLevel(MQTTCLIENT_TRACE_ERROR);
+#endif
+
+    MQTTClient_setTraceCallback([](enum MQTTCLIENT_TRACE_LEVELS level, char *message) {
+        if (level >= MQTTCLIENT_TRACE_ERROR) {
+            LOGE(TAG, "paho: %s", message);
+        } else if (level != MQTTCLIENT_TRACE_MINIMUM) {
+            LOGD(TAG, "paho %d: %s", (int)level, message);
+        }
+    });
+
+    connect();
+}
 
 void HomeAssistantApi::connect() {
     _client = nullptr;

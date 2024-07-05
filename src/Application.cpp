@@ -29,17 +29,20 @@ void Application::begin() {
 
     _api->on_screen_on_changed([this](bool on) {
         if (on) {
+            _current_screen =
 #ifdef TEST_CLOCK
-            _test_clock->render();
+                _test_clock;
 #else
-            _clock->render();
+                _clock;
 #endif
+            _current_screen->render();
 
             _device->set_on(true);
         } else {
             _device->clear_screen();
 
-            _shutdown->render();
+            _current_screen = _shutdown;
+            _current_screen->render();
 
             lv_timer_create(
                 [](lv_timer_t* timer) {
@@ -52,26 +55,24 @@ void Application::begin() {
 
 #ifdef TEST_CLOCK
     _test_clock = new TestClockUI();
-
     _test_clock->begin();
-    _test_clock->render();
+
+    _current_screen = _test_clock;
 #else
     _clock = new ClockUI(_api);
-
     _clock->begin();
-    _clock->render();
+
+    _current_screen = _clock;
 #endif
 
     _shutdown = new ShutdownUI();
     _shutdown->begin();
+
+    _current_screen->render();
 }
 
 void Application::process() {
-#ifdef TEST_CLOCK
-    _test_clock->update();
-#else
-    _clock->update();
-#endif
+    _current_screen->update();
 
     _queue.process();
 }
