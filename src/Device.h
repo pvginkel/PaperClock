@@ -11,16 +11,19 @@ class Device {
     bool _four_byte_align;
     char* _lut_version;
     uint8_t* _device_buffer;
-    uint32_t _draw_count;
     IT8951_Dev_Info _device_info;
     bool _on;
+    bool _standby_after_next_paint;
 
 public:
+    Device() : _on(true), _standby_after_next_paint(false) {}
+
     bool begin();
-    void set_on(bool on);
     void clear_screen();
+    void standby_after_next_paint() { _standby_after_next_paint = true; }
 
 private:
+    void set_on(bool on);
     void flush_cb(lv_display_t* disp, const lv_area_t* area, uint8_t* px_map);
 };
 

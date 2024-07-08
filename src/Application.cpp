@@ -36,22 +36,11 @@ void Application::begin() {
 #else
                 _clock;
 #endif
-            _current_screen->render();
-
-            _device->set_on(true);
         } else {
-            _device->clear_screen();
-
             _current_screen = _shutdown;
-            _current_screen->render();
-
-            lv_timer_create(
-                [](lv_timer_t* timer) {
-                    ((Application*)timer->user_data)->_device->set_on(false);
-                    lv_timer_delete(timer);
-                },
-                1000, this);
         }
+
+        _current_screen->render();
     });
 #endif
 
@@ -61,13 +50,13 @@ void Application::begin() {
 
     _current_screen = _test_clock;
 #else
-    _clock = new ClockUI(_api);
+    _clock = new ClockUI(_device, _api);
     _clock->begin();
 
     _current_screen = _clock;
 #endif
 
-    _shutdown = new ShutdownUI();
+    _shutdown = new ShutdownUI(_device);
     _shutdown->begin();
 
     _current_screen->render();

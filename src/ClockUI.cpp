@@ -241,6 +241,10 @@ void ClockUI::do_update() {
     auto now_tm = localtime(&now_time);
     lv_label_set_text(_clock_label, strformat("%02d:%02d", now_tm->tm_hour, now_tm->tm_min).c_str());
 
+    if (now_tm->tm_min == 29 || now_tm->tm_min == 59) {
+        _device->standby_after_next_paint();
+    }
+
 #ifndef LV_SIMULATOR
 
     const auto update_cookie = _api->get_update_cookie();

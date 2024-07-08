@@ -7,6 +7,10 @@
 
 class ShutdownUI : public LvglUI {
     lv_font_t* _font_l_fa;
+    Device* _device;
+
+public:
+    ShutdownUI(Device* device) : _device(device) {}
 
 protected:
     void do_begin() override;

@@ -7,6 +7,8 @@
 #include "Queue.h"
 #include "backtrace.h"
 
+LOG_TAG(main);
+
 struct bt_ctx {
     struct backtrace_state *state;
     int error;
@@ -60,10 +62,11 @@ int main() {
     Device device;
 
     if (!device.begin()) {
+        LOGE(TAG, "Device begin failed");
         return 1;
     }
 
-    device.set_on(true);
+    device.clear_screen();
 
     Application application(&device);
 

@@ -31,6 +31,7 @@ class ClockUI : public LvglUI {
     lv_font_t* _font_s;
     lv_font_t* _font_xs;
     lv_font_t* _font_xs_mdi;
+    Device* _device;
     HomeAssistantApi* _api;
     time_t _last_update_time;
     int _api_cookie;
@@ -42,7 +43,7 @@ class ClockUI : public LvglUI {
     Stat _printer;
 
 public:
-    ClockUI(HomeAssistantApi* api) : _api(api), _api_cookie(0) {}
+    ClockUI(Device* device, HomeAssistantApi* api) : _device(device), _api(api), _api_cookie(0) {}
 
 protected:
     void do_begin() override;

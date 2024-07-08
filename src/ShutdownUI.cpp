@@ -16,6 +16,9 @@ void ShutdownUI::do_begin() {
 }
 
 void ShutdownUI::do_render(lv_obj_t* parent) {
+    _device->clear_screen();
+    _device->standby_after_next_paint();
+
     auto outer_cont = lv_obj_create(parent);
     reset_outer_container_styles(outer_cont);
     static int32_t outer_cont_col_desc[] = {LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};

@@ -8,16 +8,10 @@
 
 static auto constexpr VCOM = -1.58;
 static auto constexpr MODE = 0;
-static auto constexpr INIT_DRAW_INTERVAL = 30;
 
 LOG_TAG(Device);
 
 void Device::flush_cb(lv_display_t* disp, const lv_area_t* area, uint8_t* px_map) {
-    if (!_on) {
-        lv_display_flush_ready(disp);
-        return;
-    }
-
     // The color format is RGB565. We howevery only support 4 bit grayscale.
     // We can just take the four most significant bytes of (4 of the 5 bits of red).
     // This assumes that we're drawing black & white anyway.
@@ -33,9 +27,7 @@ void Device::flush_cb(lv_display_t* disp, const lv_area_t* area, uint8_t* px_map
     // Ensure width is a multiple of 8.
     width = (width + 7) & ~7;
 
-    // Every INIT_DRAW_INTERVAL draws we clear the screen and update the whole screen.
-
-    if (_draw_count++ % INIT_DRAW_INTERVAL == 0) {
+    if (!_on) {
         LOGD(TAG, "Performing full refresh");
 
         left = 0;
@@ -46,7 +38,7 @@ void Device::flush_cb(lv_display_t* disp, const lv_area_t* area, uint8_t* px_map
         // Tried to include a draw screen in the refresh. An image is sent with
         // the command, so it looks like it's possible, but it doesn't work.
 
-        EPD_IT8951_Clear_Refresh(_device_info, _init_target_memory_addr, INIT_Mode, true);
+        set_on(true);
     } else {
         LOGD(TAG, "Performing partial refresh");
     }
@@ -75,6 +67,12 @@ void Device::flush_cb(lv_display_t* disp, const lv_area_t* area, uint8_t* px_map
     EPD_IT8951_1bp_Refresh(_device_buffer, left, top, width, height, A2_Mode, _init_target_memory_addr, true);
 
     lv_display_flush_ready(disp);
+
+    if (_standby_after_next_paint) {
+        _standby_after_next_paint = false;
+
+        set_on(false);
+    }
 }
 
 bool Device::begin() {
@@ -169,14 +167,9 @@ void Device::set_on(bool on) {
     if (on) {
         LOGI(TAG, "Turning screen on");
 
-        // Force a full refresh.
-        _draw_count = 0;
-
         EPD_IT8951_SystemRun();
 
-        // Force a full redraw of the screen.
-
-        lv_obj_invalidate(lv_screen_active());
+        clear_screen();
     } else {
         LOGI(TAG, "Turning screen off");
 
