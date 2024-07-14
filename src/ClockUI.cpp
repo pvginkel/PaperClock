@@ -53,6 +53,7 @@ void ClockUI::do_render(lv_obj_t* parent) {
     auto hours_cont = lv_obj_create(outer_cont);
     reset_layout_container_styles(hours_cont);
     lv_obj_set_style_pad_hor(hours_cont, lv_dpx(50), LV_PART_MAIN);
+    lv_obj_set_style_pad_top(hours_cont, lv_dpx(40), LV_PART_MAIN);
     static int32_t right_cont_col_desc[] = {LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
     static int32_t right_cont_row_desc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
     lv_obj_set_grid_dsc_array(hours_cont, right_cont_col_desc, right_cont_row_desc);
@@ -71,7 +72,7 @@ void ClockUI::do_render(lv_obj_t* parent) {
 
     auto stats_cont = lv_obj_create(outer_cont);
     reset_layout_container_styles(stats_cont);
-    lv_obj_set_style_pad_hor(stats_cont, lv_dpx(50), LV_PART_MAIN);
+    lv_obj_set_style_pad_hor(stats_cont, lv_dpx(30), LV_PART_MAIN);
     lv_obj_set_style_pad_ver(stats_cont, lv_dpx(30), LV_PART_MAIN);
     static int32_t bottom_cont_col_desc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
     static int32_t bottom_cont_row_desc[] = {LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
@@ -187,7 +188,7 @@ ClockUI::Stat ClockUI::create_stat(lv_obj_t* cont, int col, int row, int row_spa
                                            LV_GRID_TEMPLATE_LAST};
     static int32_t stat_cont_row_desc[] = {LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
     lv_obj_set_grid_dsc_array(stat_cont, stat_cont_col_desc, stat_cont_row_desc);
-    lv_obj_set_grid_cell(stat_cont, LV_GRID_ALIGN_START, col, 1, LV_GRID_ALIGN_START, row, row_span);
+    lv_obj_set_grid_cell(stat_cont, LV_GRID_ALIGN_START, col, 1, LV_GRID_ALIGN_CENTER, row, row_span);
 
     Stat result;
 
