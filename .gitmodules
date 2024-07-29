@@ -1,7 +1,6 @@
 [submodule "lib/cJSON"]
 	path = lib/cJSON
 	url = https://github.com/DaveGamble/cJSON.git
-	branch = master
 [submodule "lib/cmark"]
 	path = lib/cmark
 	url = https://github.com/commonmark/cmark.git
@@ -20,3 +19,6 @@
 [submodule "lib/paho"]
 	path = lib/paho
 	url = https://github.com/eclipse/paho.mqtt.c.git
+[submodule "lib/lg"]
+	path = lib/lg
+	url = https://github.com/joan2937/lg.git

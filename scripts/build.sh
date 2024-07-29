@@ -4,11 +4,9 @@ cd "$(dirname "$0")/.."
 
 set -e
 
-if [ ! -d build ]; then mkdir build; fi
+mkdir -p build
 
 cd build
-
-#if [ -f CMakeCache.txt ]; then rm CMakeCache.txt; fi
 
 if [ "$1" = "debug" ]; then
   # The version info is rewritten so that it doesn't have a build timestamp
