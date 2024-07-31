@@ -39,21 +39,42 @@ build_libbacktrace() {
     make -j$(nproc) install
 }
 
+build_bcm2835() {
+    echo "Building bcm2835..."
+
+    cd $ROOT/lib/bcm2835
+    mkdir -p $ROOT/build/lib/bcm2835
+
+    ./configure --build "$(gcc -dumpmachine)" --host "$CROSS_TRIPLE" --prefix=$ROOT/build/lib/bcm2835
+    make -j$(nproc)
+    make -j$(nproc) install
+}
+
 build_app() {
     echo "Building app..."
 
     cd $ROOT/build
-    cmake -DCMAKE_BUILD_TYPE=Debug ..
+    cmake -DCMAKE_BUILD_TYPE=Debug -DGPIOLIB=$1 ..
     make -j$(nproc)
 }
 
 main() {
     mkdir -p $ROOT/build
 
-    build_lg
+    if [ "$1" = "lg" ]; then
+        build_lg
+        GPIOLIB=lg
+    elif [ "$1" = "bcm" ]; then
+        build_bcm2835
+        GPIOLIB=bcm
+    else
+        echo "Specify lg or bcm at the command line"
+        exit 1
+    fi
+
     build_freetype
     build_libbacktrace
-    build_app
+    build_app "$GPIOLIB"
 }
 
 main "$@"

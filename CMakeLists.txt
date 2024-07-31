@@ -37,13 +37,48 @@ FILE(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.c ${PROJECT_SOURCE_DIR}/sr
 
 add_executable(main ${SOURCES})
 
-target_compile_definitions(main PRIVATE LGPIO=1)
+set(GPIOLIB "" CACHE STRING "Choose the GPIO library: bcm or lg")
+
+add_custom_target(copy_dependencies ALL
+    COMMENT "Copying dependencies to ${PROJECT_SOURCE_DIR}/bin"
+)
+
+if(GPIOLIB STREQUAL "bcm")
+    target_compile_definitions(main PRIVATE BCM=1)
+
+    find_library(BCM2835_LIB bcm2835 HINTS ${PROJECT_SOURCE_DIR}/build/lib/bcm2835/lib)
+
+    target_link_libraries(main ${BCM2835_LIB})
+
+    target_include_directories(
+        main PUBLIC
+        ${PROJECT_SOURCE_DIR}/build/lib/bcm2835/include
+    )
+elseif(GPIOLIB STREQUAL "lg")
+    target_compile_definitions(main PRIVATE LGPIO=1)
+
+    find_library(LGPIO_LIB lgpio HINTS ${PROJECT_SOURCE_DIR}/build/lib/lg/lib)
+
+    target_link_libraries(main ${LGPIO_LIB})
+
+    target_include_directories(
+        main PUBLIC
+        ${PROJECT_SOURCE_DIR}/build/lib/lg/include
+    )
+
+    add_custom_command(
+        TARGET copy_dependencies
+        COMMAND ${CMAKE_COMMAND} -E copy ${LGPIO_LIB} ${PROJECT_SOURCE_DIR}/bin
+        COMMENT "Copying files from ${LGPIO_LIB} to ${PROJECT_SOURCE_DIR}/bin"
+    )
+else()
+    message(FATAL_ERROR "Invalid value for GPIOLIB: ${GPIOLIB}")
+endif()
 
 find_library(BACKTRACE_LIB backtrace HINTS ${PROJECT_SOURCE_DIR}/build/lib/libbacktrace/lib)
-find_library(LGPIO_LIB lgpio HINTS ${PROJECT_SOURCE_DIR}/build/lib/lg/lib)
 find_library(FREETYPE_LIB freetype HINTS ${PROJECT_SOURCE_DIR}/build/lib/freetype/lib)
 
-target_link_libraries(main lvgl m pthread cjson ${BACKTRACE_LIB} ${LGPIO_LIB} ${FREETYPE_LIB} paho-mqtt3c)
+target_link_libraries(main lvgl m pthread cjson ${BACKTRACE_LIB} ${FREETYPE_LIB} paho-mqtt3c)
 
 target_include_directories(
     main PUBLIC
@@ -51,25 +86,11 @@ target_include_directories(
     ${PROJECT_SOURCE_DIR}/lib/lvgl
     ${PROJECT_SOURCE_DIR}/lib/cJSON
     ${PROJECT_SOURCE_DIR}/lib/paho/src
-    ${PROJECT_SOURCE_DIR}/build/lib/lg/include
     ${PROJECT_SOURCE_DIR}/build/lib/libbacktrace/include
 )
 
-set(DEPENDENCIES
-    ${PROJECT_SOURCE_DIR}/build/lib/libbacktrace/lib
-    ${PROJECT_SOURCE_DIR}/build/lib/lg/lib
-    ${PROJECT_SOURCE_DIR}/build/lib/freetype/lib
-    ${PROJECT_SOURCE_DIR}/tools/fonts
+add_custom_command(
+    TARGET copy_dependencies
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/tools/fonts ${PROJECT_SOURCE_DIR}/bin
+    COMMENT "Copying files from ${PROJECT_SOURCE_DIR}/tools/fonts to ${PROJECT_SOURCE_DIR}/bin"
 )
-
-add_custom_target(copy_dependencies ALL
-    COMMENT "Copying dependencies to ${PROJECT_SOURCE_DIR}/bin"
-)
-
-foreach(LIBRARY ${DEPENDENCIES})
-    add_custom_command(
-        TARGET copy_dependencies
-        COMMAND ${CMAKE_COMMAND} -E copy_directory ${LIBRARY} ${PROJECT_SOURCE_DIR}/bin
-        COMMENT "Copying files from ${LIBRARY} to ${PROJECT_SOURCE_DIR}/bin"
-    )
-endforeach()

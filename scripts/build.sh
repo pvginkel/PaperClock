@@ -27,11 +27,11 @@ if [ "$1" = "debug" ]; then
     echo "$NEW_VERSIONINFO" > ../lib/paho/src/VersionInfo.h.in
   fi
 
-  cmake -DCMAKE_BUILD_TYPE=Debug ..
+  cmake -DCMAKE_BUILD_TYPE=Debug -DGPIOLIB=lg ..
   make -j
 else
   git reset ../lib/paho/src/VersionInfo.h.in >/dev/null 2>&1
 
-  cmake ..
+  cmake -DGPIOLIB=lg ..
   make
 fi

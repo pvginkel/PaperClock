@@ -21,4 +21,5 @@ docker run -it --rm \
     -e BUILDER_USER="$(id -un)" \
     -e BUILDER_GROUP="$(id -gn)" \
     $IMAGE \
-    scripts/dockcross/crossbuild.sh
+    scripts/dockcross/crossbuild.sh \
+    "$@"
