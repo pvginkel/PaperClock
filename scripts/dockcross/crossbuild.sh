@@ -43,7 +43,7 @@ build_app() {
     echo "Building app..."
 
     cd $ROOT/build
-    cmake ..
+    cmake -DCMAKE_BUILD_TYPE=Debug ..
     make -j$(nproc)
 }
 
