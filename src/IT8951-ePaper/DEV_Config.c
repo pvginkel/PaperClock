@@ -272,7 +272,7 @@ UBYTE DEV_Module_Init(void)
 	wiringPiSPISetup(0,10000000);
 	// wiringPiSPISetupMode(0, 32000000, 0);
 #elif  LGPIO
-	lguSetInternal(LG_CFG_ID_DEBUG_LEVEL, -1);
+	// lguSetInternal(LG_CFG_ID_DEBUG_LEVEL, -1);
 
 	Debug("Connecting using LGPIO\n");
 
