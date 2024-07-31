@@ -45,7 +45,10 @@ void DEV_Digital_Write(UWORD Pin, UBYTE Value)
 #ifdef BCM
 	bcm2835_gpio_write(Pin, Value);
 #elif  LGPIO  
-    lgGpioWrite(GPIO_Handle, Pin, Value);
+    int err = lgGpioWrite(GPIO_Handle, Pin, Value);
+	if (err) {
+		Debug("lgGpioWrite failed with error %d\n", err);
+	}
 #elif GPIOD
     GPIOD_Write(Pin, Value);
 #endif
@@ -177,11 +180,15 @@ static void DEV_GPIO_Mode(UWORD Pin, UWORD Mode)
 	}
 #elif  LGPIO  
     if(Mode == 0 || Mode == LG_SET_INPUT){
-        lgGpioClaimInput(GPIO_Handle,LFLAGS,Pin);
-        // Debug("IN Pin = %d\r\n",Pin);
+        int err = lgGpioClaimInput(GPIO_Handle,LFLAGS,Pin);
+		if (err) {
+	        Debug("lgGpioClaimInput failed with error %d\n", err);
+		}
     }else{
-        lgGpioClaimOutput(GPIO_Handle, LFLAGS, Pin, LG_LOW);
-        // Debug("OUT Pin = %d\r\n",Pin);
+        int err = lgGpioClaimOutput(GPIO_Handle, LFLAGS, Pin, LG_LOW);
+		if (err) {
+			Debug("lgGpioClaimOutput failed with error %d\n", err);
+		}
     }
 #elif GPIOD
 	if(Mode == 0 || Mode == GPIOD_IN) {
@@ -265,6 +272,10 @@ UBYTE DEV_Module_Init(void)
 	wiringPiSPISetup(0,10000000);
 	// wiringPiSPISetupMode(0, 32000000, 0);
 #elif  LGPIO
+	lguSetInternal(LG_CFG_ID_DEBUG_LEVEL, -1);
+
+	Debug("Connecting using LGPIO\n");
+
     char buffer[NUM_MAXBUF];
     FILE *fp;
 
@@ -293,6 +304,12 @@ UBYTE DEV_Module_Init(void)
         }
     }
     SPI_Handle = lgSpiOpen(0, 0, 12500000, 0);
+	if (SPI_Handle < 0)
+	{
+		Debug("lgSpiOpen failed with error %d\n", SPI_Handle);
+		return -1;
+	}
+
     DEV_GPIO_Init();
 #elif GPIOD
 	printf("Write and read /dev/spidev0.0 \r\n");
