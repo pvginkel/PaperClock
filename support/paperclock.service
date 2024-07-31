@@ -1,0 +1,17 @@
+[Unit]
+Description=Paperclock Service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+WorkingDirectory=/var/local/paperclock/bin
+ExecStart=/var/local/paperclock/bin/main
+Environment=LD_LIBRARY_PATH=/var/local/paperclock/bin:$LD_LIBRARY_PATH
+Environment=MQTT_PASSWORD=oGhdlk3ZaYdwh4U5GXYW8FRQ7ClcorKiL9sa9vX0FKjiy3vDbZ8sIJnAilGZaQY
+Environment=MQTT_USER_NAME=mqtt
+Environment=MQTT_ADDRESS=mqtt://192.168.178.5
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target
