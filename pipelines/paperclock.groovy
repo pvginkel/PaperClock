@@ -19,7 +19,7 @@ podTemplate(inheritFrom: 'jenkins-agent-large', containers: [
                 sh 'git submodule update --init --recursive --depth 1'
                 
                 container('dockcross') {
-                    sh 'scripts/dockcross/crossbuild.sh'
+                    sh 'scripts/dockcross/crossbuild.sh bcm'
                 }
             }
             
