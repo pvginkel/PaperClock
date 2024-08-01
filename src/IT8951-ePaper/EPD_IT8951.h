@@ -120,12 +120,6 @@ IT8951 Command defines
 #define IT8951_LDIMG_L_ENDIAN   0
 #define IT8951_LDIMG_B_ENDIAN   1
 
-#if LGPIO
-#define IT8951_LDIMG_ENDIAN IT8951_LDIMG_B_ENDIAN
-#else
-#define IT8951_LDIMG_ENDIAN IT8951_LDIMG_L_ENDIAN
-#endif
-
 /*-----------------------------------------------------------------------
 IT8951 Registers defines
 ------------------------------------------------------------------------*/

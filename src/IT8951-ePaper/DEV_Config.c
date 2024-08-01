@@ -88,8 +88,6 @@ void DEV_SPI_WriteByte(UBYTE Value)
 #endif
 }
 
-#ifdef  LGPIO 
-
 /******************************************************************************
 function:	SPI Write
 parameter:
@@ -97,6 +95,9 @@ Info:
 ******************************************************************************/
 void DEV_SPI_WriteBytes(UBYTE* Value, UDOUBLE Length)
 {
+#ifdef BCM
+	bcm2835_spi_writenb(Value, Length);
+#elif  LGPIO 
 	// UDOUBLE Block = LG_MAX_SPI_DEVICE_COUNT;
 	UDOUBLE Block = LG_MAX_SPI_DEVICE_COUNT / 16;
 
@@ -108,9 +109,10 @@ void DEV_SPI_WriteBytes(UBYTE* Value, UDOUBLE Length)
 
 		lgSpiWrite(SPI_Handle,Value + Offset, Chunk);
 	}
-}
-
+#else
+	#error unsupported
 #endif
+}
 
 /******************************************************************************
 function:	SPI Read
