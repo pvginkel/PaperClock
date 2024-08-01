@@ -33,8 +33,6 @@ podTemplate(inheritFrom: 'jenkins-agent-large', containers: [
         stage('Deploy paperclock') {
             dir('PaperClock') {
                 helmCharts.ssh('pvginkel@192.168.178.10', 'sudo systemctl stop paperclock')
-                sh 'find'
-                sh 'ls /home/jenkins/agent/workspace/PaperClock/PaperClock/bin/*'
                 helmCharts.scp('bin/.', 'pvginkel@192.168.178.10:/var/local/paperclock/bin')
                 helmCharts.ssh('pvginkel@192.168.178.10', 'sudo systemctl start paperclock')
             }
