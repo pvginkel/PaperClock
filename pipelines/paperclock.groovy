@@ -1,12 +1,7 @@
 library('JenkinsPipelineUtils') _
 
 podTemplate(inheritFrom: 'jenkins-agent-large', containers: [
-    containerTemplate(name: 'dockcross', image: 'dockcross/linux-arm64', command: 'sleep', args: 'infinity', alwaysPullImage: true, envVars: [
-    containerEnvVar(key: 'BUILDER_UID', value: '1000'),
-    containerEnvVar(key: 'BUILDER_GID', value: '1000'),
-    containerEnvVar(key: 'BUILDER_USER', value: 'jenkins'),
-    containerEnvVar(key: 'BUILDER_GROUP', value: 'jenkins'),
-  ])
+    containerTemplates.dockbuild('dockcross', 'dockcross/linux-arm64'),
 ]) {
     node(POD_LABEL) {
         stage('Build paperclock') {
@@ -15,11 +10,15 @@ podTemplate(inheritFrom: 'jenkins-agent-large', containers: [
                     credentialsId: '5f6fbd66-b41c-405f-b107-85ba6fd97f10',
                     url: 'https://github.com/pvginkel/PaperClock.git'
                     
-                sh 'git rm tools/windows_simulator'
-                sh 'git submodule update --init --recursive --depth 1'
-                
-                container('dockcross') {
-                    sh 'scripts/dockcross/crossbuild.sh bcm'
+                cache(defaultBranch: 'main', caches: [
+                    arbitraryFileCache(path: 'build/lib/libbacktrace', cacheValidityDecidingFile: gitUtils.getTreeHashFile('lib/libbacktrace')),
+                    arbitraryFileCache(path: 'build/lib/lvgl', cacheValidityDecidingFile: gitUtils.getTreeHashFile('lib/lvgl')),
+                    arbitraryFileCache(path: 'build/lib/lg', cacheValidityDecidingFile: gitUtils.getTreeHashFile('lib/lg')),
+                    arbitraryFileCache(path: 'build/lib/freetype', cacheValidityDecidingFile: gitUtils.getTreeHashFile('lib/freetype')),
+                ]) {
+                    container('dockcross') {
+                        sh 'gosu 1000:1000 scripts/dockcross/crossbuild.sh bcm'
+                    }
                 }
             }
             

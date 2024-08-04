@@ -18,20 +18,12 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin
     CACHE PATH "Output directory for shared libraries.")
 
-add_subdirectory(lib/lvgl)
-
 set(ENABLE_CJSON_TEST OFF CACHE BOOL "Enable building cJSON test" FORCE)
 add_subdirectory(lib/cJSON)
 
 set(PAHO_ENABLE_TESTING FALSE CACHE BOOL "Build tests and run" FORCE)
 set(PAHO_WITH_SSL FALSE CACHE BOOL "Flag that defines whether to build ssl-enabled binaries too. " FORCE)
 add_subdirectory(lib/paho)
-
-target_include_directories(
-    lvgl PUBLIC
-    ${PROJECT_SOURCE_DIR}/src
-    ${PROJECT_SOURCE_DIR}/build/lib/freetype/include/freetype2
-)
 
 FILE(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.c ${PROJECT_SOURCE_DIR}/src/*.cpp)
 
@@ -77,16 +69,19 @@ endif()
 
 find_library(BACKTRACE_LIB backtrace HINTS ${PROJECT_SOURCE_DIR}/build/lib/libbacktrace/lib)
 find_library(FREETYPE_LIB freetype HINTS ${PROJECT_SOURCE_DIR}/build/lib/freetype/lib)
+find_library(LVGL_LIB lvgl HINTS ${PROJECT_SOURCE_DIR}/build/lib/lvgl/lib)
 
-target_link_libraries(main lvgl m pthread cjson ${BACKTRACE_LIB} ${FREETYPE_LIB} paho-mqtt3c)
+target_link_libraries(main ${LVGL_LIB} m pthread cjson ${BACKTRACE_LIB} ${FREETYPE_LIB} paho-mqtt3c)
+
+add_compile_definitions(LV_CONF_PATH=${PROJECT_SOURCE_DIR}/src/lv_conf.h)
 
 target_include_directories(
     main PUBLIC
     ${PROJECT_SOURCE_DIR}
-    ${PROJECT_SOURCE_DIR}/lib/lvgl
     ${PROJECT_SOURCE_DIR}/lib/cJSON
     ${PROJECT_SOURCE_DIR}/lib/paho/src
     ${PROJECT_SOURCE_DIR}/build/lib/libbacktrace/include
+    ${PROJECT_SOURCE_DIR}/build/lib/lvgl/include/lvgl
 )
 
 add_custom_command(
