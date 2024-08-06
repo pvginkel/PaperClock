@@ -74,7 +74,7 @@ static void EPD_IT8951_ReadBusy(void)
         DEV_Delay_ms(1);
     }
 
-    Debug("Screen was busy for more than 30 seconds; restarting\n");
+    Debug("Screen was busy for more than 30 seconds; exiting\n");
     exit(98);
 }
 
@@ -387,11 +387,23 @@ parameter:
 ******************************************************************************/
 static void EPD_IT8951_WaitForDisplayReady(void)
 {
-    //Check IT8951 Register LUTAFSR => NonZero Busy, Zero - Free
-    while( EPD_IT8951_ReadReg(LUTAFSR) )
-    {
-        //wait in idle state
+    for (int i = 0; i < 30000; i++) {
+        //Check IT8951 Register LUTAFSR => NonZero Busy, Zero - Free
+        if( !EPD_IT8951_ReadReg(LUTAFSR) )
+        {
+            return;
+        }
+
+        if (i > 0 && i % 1000 == 0) {
+            Debug("Device not ready for %d seconds\n", i / 1000);
+        }
+
+        DEV_Delay_ms(1);
     }
+
+    Debug("Device not ready for more than 30 seconds; exiting\n");
+    exit(98);
+
 }
 
 
