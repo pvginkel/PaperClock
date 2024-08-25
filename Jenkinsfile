@@ -24,6 +24,12 @@ podTemplate(inheritFrom: 'jenkins-agent-large', containers: [
         }
         
         stage('Deploy paperclock') {
+            dir('HelmCharts') {
+                git branch: 'main',
+                    credentialsId: '5f6fbd66-b41c-405f-b107-85ba6fd97f10',
+                    url: 'https://github.com/pvginkel/HelmCharts.git'
+            }
+
             dir('PaperClock') {
                 helmCharts.ssh('pvginkel@192.168.178.10', 'sudo systemctl stop paperclock')
                 helmCharts.scp('bin/.', 'pvginkel@192.168.178.10:/var/local/paperclock/bin')
