@@ -21,12 +21,6 @@ podTemplate(inheritFrom: 'jenkins-agent-large', containers: [
                     }
                 }
             }
-            
-            dir('HelmCharts') {
-                git branch: 'main',
-                    credentialsId: '5f6fbd66-b41c-405f-b107-85ba6fd97f10',
-                    url: 'https://github.com/pvginkel/HelmCharts.git'
-            }
         }
         
         stage('Deploy paperclock') {
