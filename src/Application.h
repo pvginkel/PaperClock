@@ -18,9 +18,7 @@ public:
     static constexpr auto PRODUCTION = false;
 #endif
 
-#ifndef LV_SIMULATOR
     Device* _device;
-#endif
     Queue _queue;
     Tasks _tasks;
     LvglUI* _current_screen;
@@ -32,9 +30,7 @@ public:
     HomeAssistantApi* _api;
 
 public:
-#ifndef LV_SIMULATOR
     Application(Device* device) : _device(device) {}
-#endif
 
     void begin();
     void process();

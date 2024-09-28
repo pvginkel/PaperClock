@@ -27,4 +27,12 @@ private:
     void flush_cb(lv_display_t* disp, const lv_area_t* area, uint8_t* px_map);
 };
 
+#else
+
+class Device {
+public:
+    void clear_screen() {}
+    void standby_after_next_paint() {}
+};
+
 #endif
