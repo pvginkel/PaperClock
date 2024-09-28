@@ -89,7 +89,7 @@ void ClockUI::do_render(lv_obj_t* parent) {
     lv_obj_set_grid_cell(stats_cont, LV_GRID_ALIGN_START, 0, 1, LV_GRID_ALIGN_START, 0, 1);
     lv_obj_set_grid_cell(_clock_label, LV_GRID_ALIGN_END, 0, 1, LV_GRID_ALIGN_CENTER, 1, 1);
     lv_obj_set_grid_cell(hours_cont, LV_GRID_ALIGN_START, 1, 1, LV_GRID_ALIGN_END, 0, 2);
-    lv_obj_set_grid_cell(days_cont, LV_GRID_ALIGN_CENTER, 0, 2, LV_GRID_ALIGN_START, 2, 1);
+    lv_obj_set_grid_cell(days_cont, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_START, 2, 1);
 
     // Add daily forecast icons.
 
