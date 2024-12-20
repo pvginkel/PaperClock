@@ -198,7 +198,7 @@ void HomeAssistantApi::begin() {
         R"({"entity_id": "sensor.weerlive_forecast_hour_1", "state": "17", "attributes": {"image": "regen", "temp": 16, "windbft": 3, "friendly_name": "WeerLive Forecast Hour 1"}, "last_changed": "2024-07-05T15:34:53.398432+00:00", "last_reported": "2024-07-05T15:34:53.398432+00:00", "last_updated": "2024-07-05T15:34:53.398432+00:00", "context": {"id": "01J21RHDPPEEYXWAJY1KT4670R", "parent_id": null, "user_id": null}})",
         _forecast_hours[0]);
     parse_day_forecast(
-        R"({"entity_id": "sensor.weerlive_forecast_day_1", "state": "5", "attributes": {"image": "halfbewolkt", "min_temp": 16, "max_temp": 17, "neersl_perc_dag": 20, "zond_perc_dag": 22, "friendly_name": "WeerLive Forecast Day 1"}, "last_changed": "2024-07-05T15:34:53.400550+00:00", "last_reported": "2024-07-05T15:34:53.400550+00:00", "last_updated": "2024-07-05T15:34:53.400550+00:00", "context": {"id": "01J21RHDPRZGB0E6Y8V9HVK1DD", "parent_id": null, "user_id": null}})",
+        R"({"entity_id": "sensor.weerlive_forecast_day_1", "state": "5", "attributes": {"image": "halfbewolkt", "min_temp": 6, "max_temp": 7, "neersl_perc_dag": 20, "zond_perc_dag": 22, "friendly_name": "WeerLive Forecast Day 1"}, "last_changed": "2024-07-05T15:34:53.400550+00:00", "last_reported": "2024-07-05T15:34:53.400550+00:00", "last_updated": "2024-07-05T15:34:53.400550+00:00", "context": {"id": "01J21RHDPRZGB0E6Y8V9HVK1DD", "parent_id": null, "user_id": null}})",
         _forecast_days[0]);
 
     for (auto i = 1; i < 4; i++) {

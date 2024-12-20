@@ -122,7 +122,7 @@ ClockUI::ForecastDayIcon ClockUI::create_forecast_day_icon(lv_obj_t* cont, int i
     static int32_t icon_cont_col_desc[] = {LV_GRID_FR(8), LV_GRID_FR(5), LV_GRID_TEMPLATE_LAST};
     static int32_t icon_cont_row_desc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
     lv_obj_set_grid_dsc_array(icon_cont, icon_cont_col_desc, icon_cont_row_desc);
-    lv_obj_set_grid_cell(icon_cont, LV_GRID_ALIGN_START, index, 1, LV_GRID_ALIGN_START, 0, 1);
+    lv_obj_set_grid_cell(icon_cont, LV_GRID_ALIGN_STRETCH, index, 1, LV_GRID_ALIGN_START, 0, 1);
 
     ForecastDayIcon result;
 
@@ -136,7 +136,7 @@ ClockUI::ForecastDayIcon ClockUI::create_forecast_day_icon(lv_obj_t* cont, int i
     lv_obj_set_style_text_font(result.weekday_label, _font_xs, LV_PART_MAIN);
 
     result.temperature_label = lv_label_create(icon_cont);
-    lv_obj_set_grid_cell(result.temperature_label, LV_GRID_ALIGN_START, 0, 2, LV_GRID_ALIGN_CENTER, 1, 1);
+    lv_obj_set_grid_cell(result.temperature_label, LV_GRID_ALIGN_CENTER, 0, 2, LV_GRID_ALIGN_CENTER, 1, 1);
     lv_obj_set_style_text_font(result.temperature_label, _font_xs, LV_PART_MAIN);
 
     return result;
