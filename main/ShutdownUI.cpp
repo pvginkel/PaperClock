@@ -3,16 +3,16 @@
 #include "ShutdownUI.h"
 
 #include "mdi-icons.h"
-
-LOG_TAG(ShutdownUI);
+#include "ttffonts.h"
 
 static constexpr auto FONT_SIZE_L = 800;
+
+ShutdownUI::~ShutdownUI() { lv_tiny_ttf_destroy(_font_l_fa); }
 
 void ShutdownUI::do_begin() {
     LvglUI::do_begin();
 
-    _font_l_fa = lv_freetype_font_create(FONTS_PREFIX "fa-light-300.ttf", LV_FREETYPE_FONT_RENDER_MODE_BITMAP,
-                                         FONT_SIZE_L, LV_FREETYPE_FONT_STYLE_NORMAL);
+    _font_l_fa = lv_tiny_ttf_create_data(ttffont_shutdown, ttffont_shutdown_size, FONT_SIZE_L);
 }
 
 void ShutdownUI::do_render(lv_obj_t* parent) {
@@ -21,8 +21,8 @@ void ShutdownUI::do_render(lv_obj_t* parent) {
 
     auto outer_cont = lv_obj_create(parent);
     reset_outer_container_styles(outer_cont);
-    static int32_t outer_cont_col_desc[] = {LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
-    static int32_t outer_cont_row_desc[] = {LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
+    static lv_coord_t outer_cont_col_desc[] = {LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
+    static lv_coord_t outer_cont_row_desc[] = {LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
     lv_obj_set_grid_dsc_array(outer_cont, outer_cont_col_desc, outer_cont_row_desc);
 
     auto label = lv_label_create(outer_cont);

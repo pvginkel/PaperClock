@@ -2,28 +2,33 @@
 
 #include "Queue.h"
 
-Queue::Queue() {}
+#ifndef LV_SIMULATOR
 
-void Queue::enqueue(const function<void()>& task) {
-    with_mutex(_mutex, [this, task]() { _queue.push(task); });
-}
+Queue::Queue() { _queue = xQueueCreate(32, sizeof(function<void()>)); }
+
+void Queue::enqueue(const function<void()> &task) { xQueueSend(_queue, &task, portMAX_DELAY); }
 
 void Queue::process() {
-    while (true) {
-        auto task = with_mutex<optional<function<void()>>>(_mutex, [this]() -> optional<function<void()>> {
-            if (_queue.empty()) {
-                return nullopt;
-            }
-
-            auto result = _queue.front();
-            _queue.pop();
-            return result;
-        });
-
-        if (!task.has_value()) {
-            return;
+    while (uxQueueMessagesWaiting(_queue) > 0) {
+        function<void()> task;
+        if (xQueueReceive(_queue, &task, 0) == pdTRUE) {
+            task();
         }
-
-        task.value()();
     }
 }
+
+#else
+
+Queue::Queue() { }
+
+void Queue::enqueue(const function<void()>& task) { _queue.push_back(task); }
+
+void Queue::process() {
+    while (!_queue.empty())
+    {
+        _queue.front()();
+        _queue.pop_front();
+    }
+}
+
+#endif

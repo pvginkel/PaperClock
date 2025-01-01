@@ -3,7 +3,6 @@
 #include "HomeAssistantApi.h"
 #include "LvglUI.h"
 #include "Queue.h"
-#include "Tasks.h"
 
 class ShutdownUI : public LvglUI {
     lv_font_t* _font_l_fa;
@@ -11,6 +10,7 @@ class ShutdownUI : public LvglUI {
 
 public:
     ShutdownUI(Device* device) : _device(device) {}
+    ~ShutdownUI() override;
 
 protected:
     void do_begin() override;

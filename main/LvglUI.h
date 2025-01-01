@@ -1,24 +1,7 @@
 ﻿#pragma once
 
-void lv_obj_set_bounds(lv_obj_t* obj, int x, int y, int width, int height, lv_text_align_t align);
-
-class LvglUI;
-
-class LvglUICookie {
-    uint32_t _cookie;
-
-public:
-    LvglUICookie(uint32_t cookie) : _cookie(cookie) {}
-
-    bool is_valid() const;
-};
-
 class LvglUI {
-    static atomic<uint32_t> _current_cookie;
-
     vector<lv_obj_t*> _loading_circles;
-
-    friend LvglUICookie;
 
 public:
     LvglUI() {}
@@ -44,5 +27,4 @@ protected:
     void remove_loading_ui();
     void reset_outer_container_styles(lv_obj_t* cont);
     void reset_layout_container_styles(lv_obj_t* cont);
-    LvglUICookie get_cookie() const { return {_current_cookie}; }
 };

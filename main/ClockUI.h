@@ -3,7 +3,6 @@
 #include "HomeAssistantApi.h"
 #include "LvglUI.h"
 #include "Queue.h"
-#include "Tasks.h"
 
 class ClockUI : public LvglUI {
     struct ForecastDayIcon {
@@ -44,6 +43,7 @@ class ClockUI : public LvglUI {
 
 public:
     ClockUI(Device* device, HomeAssistantApi* api) : _device(device), _api(api), _api_cookie(0) {}
+    ~ClockUI() override;
 
 protected:
     void do_begin() override;

@@ -1,38 +1,30 @@
 #pragma once
 
 #ifndef LV_SIMULATOR
-
-#include "IT8951-ePaper/EPD_IT8951.h"
+#include "it8951.h"
+#endif
 
 class Device {
-    uint16_t _panel_width;
-    uint16_t _panel_height;
-    uint32_t _init_target_memory_addr;
-    bool _four_byte_align;
-    char* _lut_version;
-    uint8_t* _device_buffer;
-    IT8951_Dev_Info _device_info;
-    bool _on;
-    bool _standby_after_next_paint;
-
 public:
-    Device() : _on(true), _standby_after_next_paint(false) {}
-
+#ifndef LV_SIMULATOR
     bool begin();
-    void clear_screen();
+    void process();
+    bool set_on(bool on);
+    void clear_screen() { _display.clear_screen(); }
+#endif
+
     void standby_after_next_paint() { _standby_after_next_paint = true; }
 
 private:
-    void set_on(bool on);
-    void flush_cb(lv_display_t* disp, const lv_area_t* area, uint8_t* px_map);
-};
+#ifndef LV_SIMULATOR
+    void flush_cb(lv_display_t* display, const lv_area_t* area, uint8_t* px_map);
 
-#else
-
-class Device {
-public:
-    void clear_screen() {}
-    void standby_after_next_paint() {}
-};
-
+    bool _on{true};
+    bool _flushing{false};
+    uint32_t _flush_start{0};
+    IT8951 _display{};
+    lv_area_t _screen_buffer_dirty{};
 #endif
+
+    bool _standby_after_next_paint{false};
+};

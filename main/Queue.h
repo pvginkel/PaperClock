@@ -1,12 +1,19 @@
 #pragma once
 
+#ifdef LV_SIMULATOR
+#include <deque>
+#endif
+
 class Queue {
-    mutex _mutex;
-    queue<function<void()>> _queue;
+#ifndef LV_SIMULATOR
+    QueueHandle_t _queue;
+#else
+    deque<function<void()>> _queue;
+#endif
 
 public:
     Queue();
 
-    void enqueue(const function<void()>& task);
+    void enqueue(const function<void()> &task);
     void process();
 };

@@ -1,9 +1,6 @@
 #pragma once
 
 #include "Device.h"
-#ifndef LV_SIMULATOR
-#include "MQTTClient.h"
-#endif
 
 struct ForecastHour {
     int hour;
@@ -22,36 +19,33 @@ struct ForecastDay {
     double percent_sun;
 };
 
+struct HomeAssistantConnectionState {
+    bool connected;
+};
+
 class HomeAssistantApi {
     string _address;
     string _client_id;
-    string _user_name;
-    string _password;
     int _update_cookie;
     Queue* _queue;
 #ifndef LV_SIMULATOR
-    MQTTClient _client;
+    esp_mqtt_client_handle_t _client;
 #endif
-    ForecastHour _forecast_hours[4];
-    ForecastDay _forecast_days[5];
-    double _outside_temperature;
-    double _woonkamer_humidity;
-    double _printer_vooruitgang;
+    ForecastHour _forecast_hours[4]{};
+    ForecastDay _forecast_days[5]{};
+    double _outside_temperature{};
+    double _woonkamer_humidity{};
+    double _printer_vooruitgang{};
     Callback<bool> _screen_on_changed;
+    Callback<HomeAssistantConnectionState> _state_changed;
 
 public:
-    HomeAssistantApi(Queue* queue, string address, string user_name, string password)
-        : _address(std::move(address)),
-          _client_id(strformat("session%d", rand())),
-          _user_name(std::move(user_name)),
-          _password(std::move(password)),
-          _queue(queue)
-
-    {}
+    HomeAssistantApi(Queue* queue) : _queue(queue) {}
 
     void begin();
     void end();
     void on_screen_on_changed(function<void(bool)> func) { _screen_on_changed.add(func); }
+    void on_state_changed(function<void(HomeAssistantConnectionState)> func) { _state_changed.add(func); }
 
     int get_update_cookie() { return _update_cookie; }
     const ForecastHour& get_forecast_hour(int index) const { return _forecast_hours[index]; }
@@ -62,17 +56,13 @@ public:
 
 private:
 #ifndef LV_SIMULATOR
-    void connect();
-    void disconnect();
-    void connection_lost(char* cause);
-    void message_arrived(char* topic_name, int topic_len, MQTTClient_message* message);
-    void delivered(MQTTClient_deliveryToken dt);
+    void eventHandler(esp_event_base_t eventBase, int32_t eventId, void* eventData);
+    void handleConnected();
+    void handleData(esp_mqtt_event_handle_t event);
+    void subscribe(const char* topic);
+    void setOnline();
 #endif
     void parse_hour_forecast(const char* json, ForecastHour& forecast);
     void parse_day_forecast(const char* json, ForecastDay& forecast);
     string get_weekday_code(int weekday);
 };
-
-/*
-
-*/

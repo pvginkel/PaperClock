@@ -73,9 +73,40 @@
     "future": "cpp",
     "iostream": "cpp",
     "sstream": "cpp",
-    "epd_it8951.h": "c"
+    "epd_it8951.h": "c",
+    "charconv": "cpp",
+    "format": "cpp",
+    "ios": "cpp",
+    "locale": "cpp",
+    "queue": "cpp",
+    "stack": "cpp",
+    "xfacet": "cpp",
+    "xhash": "cpp",
+    "xiosbase": "cpp",
+    "xlocale": "cpp",
+    "xlocbuf": "cpp",
+    "xlocinfo": "cpp",
+    "xlocmes": "cpp",
+    "xlocmon": "cpp",
+    "xlocnum": "cpp",
+    "xloctime": "cpp",
+    "xmemory": "cpp",
+    "xstring": "cpp",
+    "xtr1common": "cpp",
+    "xtree": "cpp",
+    "xutility": "cpp",
+    "lv_font.h": "c",
+    "lv_version.h": "c",
+    "lv_init.h": "c",
+    "regex": "cpp",
+    "bitset": "c",
+    "*.inc": "cpp"
   },
   "files.exclude": {
     "tools/windows_simulator/**": true
-  }
+  },
+  "idf.espIdfPathWin": "C:\\Users\\pvgin\\esp\\v5.3.2\\esp-idf",
+  "idf.toolsPathWin": "C:\\Users\\pvgin\\.espressif",
+  "idf.flashType": "UART",
+  "idf.portWin": "COM4"
 }

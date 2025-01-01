@@ -5,6 +5,7 @@
 #include <chrono>
 
 #include "mdi-icons.h"
+#include "ttffonts.h"
 
 LOG_TAG(ClockUI);
 
@@ -14,29 +15,29 @@ static constexpr auto FONT_SIZE_M = 140;
 static constexpr auto FONT_SIZE_S = 110;
 static constexpr auto FONT_SIZE_XS = 85;
 
+ClockUI::~ClockUI() {
+    lv_tiny_ttf_destroy(_font_xl);
+    lv_tiny_ttf_destroy(_font_l);
+    lv_tiny_ttf_destroy(_font_m);
+    lv_tiny_ttf_destroy(_font_s);
+    lv_tiny_ttf_destroy(_font_xs);
+    lv_tiny_ttf_destroy(_font_l_mdi);
+    lv_tiny_ttf_destroy(_font_m_mdi);
+    lv_tiny_ttf_destroy(_font_xs_mdi);
+}
+
 void ClockUI::do_begin() {
     LvglUI::do_begin();
 
-    _font_xl = lv_freetype_font_create(FONTS_PREFIX "Roboto-Medium.ttf", LV_FREETYPE_FONT_RENDER_MODE_BITMAP,
-                                       FONT_SIZE_XL, LV_FREETYPE_FONT_STYLE_NORMAL);
-    _font_l = lv_freetype_font_create(FONTS_PREFIX "Roboto-Medium.ttf", LV_FREETYPE_FONT_RENDER_MODE_BITMAP,
-                                      FONT_SIZE_L, LV_FREETYPE_FONT_STYLE_NORMAL);
-    _font_m = lv_freetype_font_create(FONTS_PREFIX "Roboto-Medium.ttf", LV_FREETYPE_FONT_RENDER_MODE_BITMAP,
-                                      FONT_SIZE_M, LV_FREETYPE_FONT_STYLE_NORMAL);
-    _font_s = lv_freetype_font_create(FONTS_PREFIX "Roboto-Regular.ttf", LV_FREETYPE_FONT_RENDER_MODE_BITMAP,
-                                      FONT_SIZE_S, LV_FREETYPE_FONT_STYLE_NORMAL);
-    _font_xs = lv_freetype_font_create(FONTS_PREFIX "Roboto-Regular.ttf", LV_FREETYPE_FONT_RENDER_MODE_BITMAP,
-                                       FONT_SIZE_XS, LV_FREETYPE_FONT_STYLE_NORMAL);
+    _font_xl = lv_tiny_ttf_create_data(ttffont_medium, ttffont_medium_size, FONT_SIZE_XL);
+    _font_l = lv_tiny_ttf_create_data(ttffont_medium, ttffont_medium_size, FONT_SIZE_L);
+    _font_m = lv_tiny_ttf_create_data(ttffont_medium, ttffont_medium_size, FONT_SIZE_M);
+    _font_s = lv_tiny_ttf_create_data(ttffont_regular, ttffont_regular_size, FONT_SIZE_S);
+    _font_xs = lv_tiny_ttf_create_data(ttffont_regular, ttffont_regular_size, FONT_SIZE_XS);
 
-    _font_l_mdi =
-        lv_freetype_font_create(FONTS_PREFIX "materialdesignicons-webfont.ttf", LV_FREETYPE_FONT_RENDER_MODE_BITMAP,
-                                FONT_SIZE_L, LV_FREETYPE_FONT_STYLE_NORMAL);
-    _font_m_mdi =
-        lv_freetype_font_create(FONTS_PREFIX "materialdesignicons-webfont.ttf", LV_FREETYPE_FONT_RENDER_MODE_BITMAP,
-                                FONT_SIZE_M, LV_FREETYPE_FONT_STYLE_NORMAL);
-    _font_xs_mdi =
-        lv_freetype_font_create(FONTS_PREFIX "materialdesignicons-webfont.ttf", LV_FREETYPE_FONT_RENDER_MODE_BITMAP,
-                                FONT_SIZE_XS, LV_FREETYPE_FONT_STYLE_NORMAL);
+    _font_l_mdi = lv_tiny_ttf_create_data(ttffont_mdi, ttffont_mdi_size, FONT_SIZE_L);
+    _font_m_mdi = lv_tiny_ttf_create_data(ttffont_mdi, ttffont_mdi_size, FONT_SIZE_M);
+    _font_xs_mdi = lv_tiny_ttf_create_data(ttffont_mdi, ttffont_mdi_size, FONT_SIZE_XS);
 }
 
 void ClockUI::do_render(lv_obj_t* parent) {
@@ -44,8 +45,8 @@ void ClockUI::do_render(lv_obj_t* parent) {
 
     auto outer_cont = lv_obj_create(parent);
     reset_outer_container_styles(outer_cont);
-    static int32_t outer_cont_col_desc[] = {LV_GRID_FR(1), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
-    static int32_t outer_cont_row_desc[] = {LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
+    static lv_coord_t outer_cont_col_desc[] = {LV_GRID_FR(1), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
+    static lv_coord_t outer_cont_row_desc[] = {LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
     lv_obj_set_grid_dsc_array(outer_cont, outer_cont_col_desc, outer_cont_row_desc);
 
     // Hours container contains the hourly forecast.
@@ -54,8 +55,9 @@ void ClockUI::do_render(lv_obj_t* parent) {
     reset_layout_container_styles(hours_cont);
     lv_obj_set_style_pad_hor(hours_cont, lv_dpx(50), LV_PART_MAIN);
     lv_obj_set_style_pad_top(hours_cont, lv_dpx(40), LV_PART_MAIN);
-    static int32_t right_cont_col_desc[] = {LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
-    static int32_t right_cont_row_desc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
+    static lv_coord_t right_cont_col_desc[] = {LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
+    static lv_coord_t right_cont_row_desc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_CONTENT,
+                                               LV_GRID_TEMPLATE_LAST};
     lv_obj_set_grid_dsc_array(hours_cont, right_cont_col_desc, right_cont_row_desc);
 
     // Days container contains the daily forecasts.
@@ -63,9 +65,9 @@ void ClockUI::do_render(lv_obj_t* parent) {
     auto days_cont = lv_obj_create(outer_cont);
     reset_layout_container_styles(days_cont);
     lv_obj_set_style_pad_all(days_cont, lv_dpx(30), LV_PART_MAIN);
-    static int32_t middle_cont_col_desc[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1),
-                                             LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
-    static int32_t middle_cont_row_desc[] = {LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
+    static lv_coord_t middle_cont_col_desc[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1),
+                                                LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
+    static lv_coord_t middle_cont_row_desc[] = {LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
     lv_obj_set_grid_dsc_array(days_cont, middle_cont_col_desc, middle_cont_row_desc);
 
     // Stats container contains the stats.
@@ -74,8 +76,9 @@ void ClockUI::do_render(lv_obj_t* parent) {
     reset_layout_container_styles(stats_cont);
     lv_obj_set_style_pad_hor(stats_cont, lv_dpx(30), LV_PART_MAIN);
     lv_obj_set_style_pad_ver(stats_cont, lv_dpx(30), LV_PART_MAIN);
-    static int32_t bottom_cont_col_desc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
-    static int32_t bottom_cont_row_desc[] = {LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
+    static lv_coord_t bottom_cont_col_desc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_CONTENT,
+                                                LV_GRID_TEMPLATE_LAST};
+    static lv_coord_t bottom_cont_row_desc[] = {LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
     lv_obj_set_grid_dsc_array(stats_cont, bottom_cont_col_desc, bottom_cont_row_desc);
 
     // Clock.
@@ -119,8 +122,8 @@ ClockUI::ForecastDayIcon ClockUI::create_forecast_day_icon(lv_obj_t* cont, int i
     auto icon_cont = lv_obj_create(cont);
     reset_layout_container_styles(icon_cont);
     lv_obj_set_style_pad_all(icon_cont, lv_dpx(25), LV_PART_MAIN);
-    static int32_t icon_cont_col_desc[] = {LV_GRID_FR(8), LV_GRID_FR(5), LV_GRID_TEMPLATE_LAST};
-    static int32_t icon_cont_row_desc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
+    static lv_coord_t icon_cont_col_desc[] = {LV_GRID_FR(8), LV_GRID_FR(5), LV_GRID_TEMPLATE_LAST};
+    static lv_coord_t icon_cont_row_desc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
     lv_obj_set_grid_dsc_array(icon_cont, icon_cont_col_desc, icon_cont_row_desc);
     lv_obj_set_grid_cell(icon_cont, LV_GRID_ALIGN_STRETCH, index, 1, LV_GRID_ALIGN_START, 0, 1);
 
@@ -146,8 +149,8 @@ ClockUI::ForecastHourIcon ClockUI::create_forecast_hour_icon(lv_obj_t* cont, int
     auto icon_cont = lv_obj_create(cont);
     reset_layout_container_styles(icon_cont);
     lv_obj_set_style_pad_all(icon_cont, lv_dpx(25), LV_PART_MAIN);
-    static int32_t icon_cont_col_desc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
-    static int32_t icon_cont_row_desc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
+    static lv_coord_t icon_cont_col_desc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
+    static lv_coord_t icon_cont_row_desc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
     lv_obj_set_grid_dsc_array(icon_cont, icon_cont_col_desc, icon_cont_row_desc);
     lv_obj_set_grid_cell(icon_cont, LV_GRID_ALIGN_START, 0, 1, LV_GRID_ALIGN_START, index, 1);
 
@@ -184,9 +187,9 @@ ClockUI::Stat ClockUI::create_stat(lv_obj_t* cont, int col, int row, int row_spa
     reset_layout_container_styles(stat_cont);
     lv_obj_set_style_pad_hor(stat_cont, lv_dpx(30), LV_PART_MAIN);
     lv_obj_set_style_pad_ver(stat_cont, lv_dpx(6), LV_PART_MAIN);
-    static int32_t stat_cont_col_desc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_CONTENT,
-                                           LV_GRID_TEMPLATE_LAST};
-    static int32_t stat_cont_row_desc[] = {LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
+    static lv_coord_t stat_cont_col_desc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_CONTENT,
+                                              LV_GRID_TEMPLATE_LAST};
+    static lv_coord_t stat_cont_row_desc[] = {LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
     lv_obj_set_grid_dsc_array(stat_cont, stat_cont_col_desc, stat_cont_row_desc);
     lv_obj_set_grid_cell(stat_cont, LV_GRID_ALIGN_START, col, 1, LV_GRID_ALIGN_CENTER, row, row_span);
 
@@ -220,10 +223,10 @@ ClockUI::Stat ClockUI::create_stat(lv_obj_t* cont, int col, int row, int row_spa
 
 void ClockUI::do_update() {
     const auto now = chrono::system_clock::now();
-    auto now_time = chrono::system_clock::to_time_t(now);
+    const auto now_time = chrono::system_clock::to_time_t(now);
 
-    auto update = _last_update_time == 0 || (now_time % 60 == 0 && now_time != _last_update_time) ||
-                  (_api_cookie == 0 && _api->get_update_cookie() != 0);
+    const auto update = _last_update_time == 0 || (now_time % 60 == 0 && now_time != _last_update_time) ||
+                        (_api_cookie == 0 && _api->get_update_cookie() != 0);
 
 #if false
 
@@ -239,10 +242,12 @@ void ClockUI::do_update() {
 
     _last_update_time = now_time;
 
-    auto now_tm = localtime(&now_time);
-    lv_label_set_text(_clock_label, strformat("%02d:%02d", now_tm->tm_hour, now_tm->tm_min).c_str());
+    const auto local_time = now_time + get_dst_offset(now_time);
+    const auto local_tm = gmtime(&local_time);
 
-    if (now_tm->tm_min == 29 || now_tm->tm_min == 59) {
+    lv_label_set_text(_clock_label, strformat("%02d:%02d", local_tm->tm_hour, local_tm->tm_min).c_str());
+
+    if (local_tm->tm_min == 29 || local_tm->tm_min == 59) {
         _device->standby_after_next_paint();
     }
 
@@ -253,11 +258,7 @@ void ClockUI::do_update() {
         return;
     }
 
-    LOGD(TAG, "Received new data, redrawing the screen");
-
-    // We don't want the screen to be update in parts. If we get new values, just
-    // invalidate the whole screen to ensure the screen is drawn in one.
-    lv_obj_invalidate(lv_screen_active());
+    ESP_LOGD(TAG, "Received new data, redrawing the screen");
 
     _api_cookie = update_cookie;
 
@@ -265,7 +266,7 @@ void ClockUI::do_update() {
 
     auto hour_offset = 0;
     // Show forecast of the next hour if we're over halfway into the current hour forecast.
-    if (now_tm->tm_min >= 30 && now_tm->tm_hour == _api->get_forecast_hour(0).hour) {
+    if (local_tm->tm_min >= 30 && local_tm->tm_hour == _api->get_forecast_hour(0).hour) {
         hour_offset++;
     }
 
