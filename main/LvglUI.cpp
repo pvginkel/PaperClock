@@ -16,7 +16,7 @@ LvglUI::~LvglUI() {
 void LvglUI::begin() { do_begin(); }
 
 void LvglUI::render() {
-    auto parent = lv_scr_act();
+    auto parent = lv_screen_active();
 
     lv_obj_clean(parent);
 
@@ -38,7 +38,7 @@ void LvglUI::render_loading_ui(lv_obj_t* parent) {
         auto obj = lv_obj_create(parent);
         _loading_circles.push_back(obj);
 
-        lv_obj_clear_flag(obj, LV_OBJ_FLAG_SCROLLABLE);
+        lv_obj_remove_flag(obj, LV_OBJ_FLAG_SCROLLABLE);
         lv_obj_set_style_bg_color(obj, lv_theme_get_color_primary(parent), 0);
         lv_obj_set_style_radius(obj, LV_RADIUS_CIRCLE, 0);
         lv_obj_set_style_border_width(obj, 0, 0);
@@ -75,7 +75,7 @@ void LvglUI::loading_animation_callback(void* var, int32_t v) {
 }
 
 void LvglUI::remove_loading_ui() {
-    lv_anim_del(this, loading_animation_callback);
+    lv_anim_delete(this, loading_animation_callback);
 
     _loading_circles.clear();
 }

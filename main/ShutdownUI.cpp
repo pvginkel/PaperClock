@@ -21,8 +21,8 @@ void ShutdownUI::do_render(lv_obj_t* parent) {
 
     auto outer_cont = lv_obj_create(parent);
     reset_outer_container_styles(outer_cont);
-    static lv_coord_t outer_cont_col_desc[] = {LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
-    static lv_coord_t outer_cont_row_desc[] = {LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
+    static int32_t outer_cont_col_desc[] = {LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
+    static int32_t outer_cont_row_desc[] = {LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
     lv_obj_set_grid_dsc_array(outer_cont, outer_cont_col_desc, outer_cont_row_desc);
 
     auto label = lv_label_create(outer_cont);

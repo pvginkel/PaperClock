@@ -45,8 +45,8 @@ void ClockUI::do_render(lv_obj_t* parent) {
 
     auto outer_cont = lv_obj_create(parent);
     reset_outer_container_styles(outer_cont);
-    static lv_coord_t outer_cont_col_desc[] = {LV_GRID_FR(1), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
-    static lv_coord_t outer_cont_row_desc[] = {LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
+    static int32_t outer_cont_col_desc[] = {LV_GRID_FR(1), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
+    static int32_t outer_cont_row_desc[] = {LV_GRID_CONTENT, LV_GRID_FR(1), LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
     lv_obj_set_grid_dsc_array(outer_cont, outer_cont_col_desc, outer_cont_row_desc);
 
     // Hours container contains the hourly forecast.
@@ -55,9 +55,8 @@ void ClockUI::do_render(lv_obj_t* parent) {
     reset_layout_container_styles(hours_cont);
     lv_obj_set_style_pad_hor(hours_cont, lv_dpx(50), LV_PART_MAIN);
     lv_obj_set_style_pad_top(hours_cont, lv_dpx(40), LV_PART_MAIN);
-    static lv_coord_t right_cont_col_desc[] = {LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
-    static lv_coord_t right_cont_row_desc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_CONTENT,
-                                               LV_GRID_TEMPLATE_LAST};
+    static int32_t right_cont_col_desc[] = {LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
+    static int32_t right_cont_row_desc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
     lv_obj_set_grid_dsc_array(hours_cont, right_cont_col_desc, right_cont_row_desc);
 
     // Days container contains the daily forecasts.
@@ -65,9 +64,9 @@ void ClockUI::do_render(lv_obj_t* parent) {
     auto days_cont = lv_obj_create(outer_cont);
     reset_layout_container_styles(days_cont);
     lv_obj_set_style_pad_all(days_cont, lv_dpx(30), LV_PART_MAIN);
-    static lv_coord_t middle_cont_col_desc[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1),
-                                                LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
-    static lv_coord_t middle_cont_row_desc[] = {LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
+    static int32_t middle_cont_col_desc[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1),
+                                             LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
+    static int32_t middle_cont_row_desc[] = {LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
     lv_obj_set_grid_dsc_array(days_cont, middle_cont_col_desc, middle_cont_row_desc);
 
     // Stats container contains the stats.
@@ -76,9 +75,8 @@ void ClockUI::do_render(lv_obj_t* parent) {
     reset_layout_container_styles(stats_cont);
     lv_obj_set_style_pad_hor(stats_cont, lv_dpx(30), LV_PART_MAIN);
     lv_obj_set_style_pad_ver(stats_cont, lv_dpx(30), LV_PART_MAIN);
-    static lv_coord_t bottom_cont_col_desc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_CONTENT,
-                                                LV_GRID_TEMPLATE_LAST};
-    static lv_coord_t bottom_cont_row_desc[] = {LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
+    static int32_t bottom_cont_col_desc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
+    static int32_t bottom_cont_row_desc[] = {LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
     lv_obj_set_grid_dsc_array(stats_cont, bottom_cont_col_desc, bottom_cont_row_desc);
 
     // Clock.
@@ -122,8 +120,8 @@ ClockUI::ForecastDayIcon ClockUI::create_forecast_day_icon(lv_obj_t* cont, int i
     auto icon_cont = lv_obj_create(cont);
     reset_layout_container_styles(icon_cont);
     lv_obj_set_style_pad_all(icon_cont, lv_dpx(25), LV_PART_MAIN);
-    static lv_coord_t icon_cont_col_desc[] = {LV_GRID_FR(8), LV_GRID_FR(5), LV_GRID_TEMPLATE_LAST};
-    static lv_coord_t icon_cont_row_desc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
+    static int32_t icon_cont_col_desc[] = {LV_GRID_FR(8), LV_GRID_FR(5), LV_GRID_TEMPLATE_LAST};
+    static int32_t icon_cont_row_desc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
     lv_obj_set_grid_dsc_array(icon_cont, icon_cont_col_desc, icon_cont_row_desc);
     lv_obj_set_grid_cell(icon_cont, LV_GRID_ALIGN_STRETCH, index, 1, LV_GRID_ALIGN_START, 0, 1);
 
@@ -149,8 +147,8 @@ ClockUI::ForecastHourIcon ClockUI::create_forecast_hour_icon(lv_obj_t* cont, int
     auto icon_cont = lv_obj_create(cont);
     reset_layout_container_styles(icon_cont);
     lv_obj_set_style_pad_all(icon_cont, lv_dpx(25), LV_PART_MAIN);
-    static lv_coord_t icon_cont_col_desc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
-    static lv_coord_t icon_cont_row_desc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
+    static int32_t icon_cont_col_desc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
+    static int32_t icon_cont_row_desc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
     lv_obj_set_grid_dsc_array(icon_cont, icon_cont_col_desc, icon_cont_row_desc);
     lv_obj_set_grid_cell(icon_cont, LV_GRID_ALIGN_START, 0, 1, LV_GRID_ALIGN_START, index, 1);
 
@@ -187,9 +185,9 @@ ClockUI::Stat ClockUI::create_stat(lv_obj_t* cont, int col, int row, int row_spa
     reset_layout_container_styles(stat_cont);
     lv_obj_set_style_pad_hor(stat_cont, lv_dpx(30), LV_PART_MAIN);
     lv_obj_set_style_pad_ver(stat_cont, lv_dpx(6), LV_PART_MAIN);
-    static lv_coord_t stat_cont_col_desc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_CONTENT,
-                                              LV_GRID_TEMPLATE_LAST};
-    static lv_coord_t stat_cont_row_desc[] = {LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
+    static int32_t stat_cont_col_desc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_CONTENT,
+                                           LV_GRID_TEMPLATE_LAST};
+    static int32_t stat_cont_row_desc[] = {LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
     lv_obj_set_grid_dsc_array(stat_cont, stat_cont_col_desc, stat_cont_row_desc);
     lv_obj_set_grid_cell(stat_cont, LV_GRID_ALIGN_START, col, 1, LV_GRID_ALIGN_CENTER, row, row_span);
 

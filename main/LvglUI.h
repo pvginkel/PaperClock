@@ -20,8 +20,8 @@ protected:
     virtual void do_begin() {}
     virtual void do_update() {}
 
-    lv_coord_t pw(double value) const { return lv_coord_t(LV_HOR_RES * (value / 100)); }
-    lv_coord_t ph(double value) const { return lv_coord_t(LV_VER_RES * (value / 100)); }
+    int32_t pw(double value) const { return int32_t(LV_HOR_RES * (value / 100)); }
+    int32_t ph(double value) const { return int32_t(LV_VER_RES * (value / 100)); }
     void render_loading_ui(lv_obj_t* parent);
     static void loading_animation_callback(void* var, int32_t v);
     void remove_loading_ui();
