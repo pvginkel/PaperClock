@@ -567,7 +567,7 @@ CONFIG_IT8951_SCLK_PIN=12
 #
 # OTA Configuration
 #
-CONFIG_OTA_ENDPOINT="http://iotsupport.home/assets/calendar-display-ota.bin"
+CONFIG_OTA_ENDPOINT="http://iotsupport.home/assets/paper-clock-ota.bin"
 CONFIG_OTA_CHECK_INTERVAL=300
 CONFIG_OTA_RECV_TIMEOUT=15000
 # end of OTA Configuration

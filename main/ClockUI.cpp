@@ -243,7 +243,7 @@ void ClockUI::do_update() {
     _last_update_time = now_time;
 
     const auto local_time = now_time + get_dst_offset(now_time);
-    const auto local_tm = gmtime(&local_time);
+    const auto local_tm = localtime(&local_time);
 
     lv_label_set_text(_clock_label, strformat("%02d:%02d", local_tm->tm_hour, local_tm->tm_min).c_str());
 

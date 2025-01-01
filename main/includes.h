@@ -69,6 +69,7 @@ static T clamp(T value, T min, T max) {
 #endif
 
 #include "Callback.h"
+#include "lv_support.h"
 #include "support.h"
 
 #ifdef LV_SIMULATOR

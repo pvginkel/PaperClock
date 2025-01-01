@@ -165,8 +165,6 @@ char const* esp_reset_reason_to_name(esp_reset_reason_t reason) {
     }
 }
 
-#endif
-
 struct DSTTransition {
     time_t time;
     int offset;
@@ -188,3 +186,11 @@ int get_dst_offset(time_t time) {
 
     return offset;
 }
+
+#else
+
+int get_dst_offset(time_t time) {
+    return 0;
+}
+
+#endif

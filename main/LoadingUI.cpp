@@ -3,7 +3,6 @@
 #include "LoadingUI.h"
 
 #include "Messages.h"
-#include "lv_support.h"
 #include "ttffonts.h"
 
 static constexpr auto FONT_SIZE_M = 85;

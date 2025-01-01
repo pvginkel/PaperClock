@@ -6,7 +6,7 @@ import datetime
 
 def get_transitions(tz):
     transitions = []
-    now = datetime.datetime.now(datetime.UTC)
+    now = datetime.datetime.utcnow()
 
     # pytz stores transition times in UTC
     # _utc_transition_times is a list of UTC datetimes when transitions occur
@@ -24,7 +24,7 @@ def get_transitions(tz):
 
     for i in range(1, len(transition_times)):
         transition = transition_times[i]
-        if transition.replace(tzinfo=datetime.timezone.utc) > now:
+        if transition > now:
             break
         start = i
 
