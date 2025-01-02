@@ -108,5 +108,5 @@
   "idf.espIdfPathWin": "C:\\Users\\pvgin\\esp\\v5.3.2\\esp-idf",
   "idf.toolsPathWin": "C:\\Users\\pvgin\\.espressif",
   "idf.flashType": "UART",
-  "idf.portWin": "COM4"
+  "idf.portWin": "COM6"
 }
