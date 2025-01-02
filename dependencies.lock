@@ -4,7 +4,7 @@ dependencies:
       type: idf
     version: 5.3.2
   it8951-esp32:
-    component_hash: bfc201364a7bd019e507e9395d304eb3c65984b21fd0acb27015be356b842a99
+    component_hash: 3e318adead4aee7ea7c08f931d11417adaf088f57769cfae5642869f02533731
     dependencies:
     - name: idf
       version: '>=5.0'
@@ -12,7 +12,7 @@ dependencies:
       git: https://github.com/pvginkel/it8951-esp32.git
       path: .
       type: git
-    version: 61552259bf5d670297225c816082e680da9740fa
+    version: 789452789a7ede5daa1d8f05bdcadc620f8f62c9
   lvgl/lvgl:
     component_hash: 096c69af22eaf8a2b721e3913da91918c5e6bf1a762a113ec01f401aa61337a0
     dependencies: []
@@ -24,6 +24,6 @@ direct_dependencies:
 - idf
 - it8951-esp32
 - lvgl/lvgl
-manifest_hash: 49778a92376e58f2f02d68ec339390f958a130399bfc8346c48235983eb07b84
+manifest_hash: f2711299730ee150e0eb23d2ba233358fa3f862ab66f1295bc0ee5d631b601c3
 target: esp32s3
 version: 2.0.0

@@ -3,4 +3,3 @@ dependencies:
   lvgl/lvgl: "~9.2.2"
   it8951-esp32:
     git: https://github.com/pvginkel/it8951-esp32.git
-    version: main

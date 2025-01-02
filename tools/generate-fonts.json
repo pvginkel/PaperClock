@@ -1,38 +1,22 @@
 [
   {
     "name": "ttffont_regular",
-    "fonts": [
-      {
-        "file": "Roboto-Regular.ttf",
-        "range": "0x20-0x7F,0xB0,0x2022"
-      }
-    ]
+    "font": "Roboto-Regular.ttf",
+    "range": "0x20-0x7F,0xB0,0x2022"
   },
   {
     "name": "ttffont_medium",
-    "fonts": [
-      {
-        "file": "Roboto-Medium.ttf",
-        "range": "0x20-0x7F,0xB0"
-      }
-    ]
+    "font": "Roboto-Medium.ttf",
+    "range": "0x20-0x7F,0xB0"
   },
   {
     "name": "ttffont_mdi",
-    "fonts": [
-      {
-        "file": "materialdesignicons-webfont.ttf",
-        "range": "0xF10C2,0xF10C3,0xF050F,0xF058E,0xF042B,0xF15FA,0xF0599,0xF0593,0xF0597,0xF0596,0xF0592,0xF0591,0xF0598,0xF0590,0xF0595,0xF0F33,0xF0594,0xF0F31"
-      }
-    ]
+    "font": "materialdesignicons-webfont.ttf",
+    "range": "0xF10C2,0xF10C3,0xF050F,0xF058E,0xF042B,0xF15FA,0xF0599,0xF0593,0xF0597,0xF0596,0xF0592,0xF0591,0xF0598,0xF0590,0xF0595,0xF0F33,0xF0594,0xF0F31"
   },
   {
     "name": "ttffont_shutdown",
-    "fonts": [
-      {
-        "file": "fa-light-300.ttf",
-        "range": "0xe38d"
-      }
-    ]
+    "font": "fa-light-300.ttf",
+    "range": "0xe38d"
   }
 ]

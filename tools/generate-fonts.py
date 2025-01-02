@@ -64,12 +64,7 @@ with open("../main/ttffonts.c", "w") as cf, open("../main/ttffonts.h", "w") as h
     for entry in config:
         print(f"Generating {entry["name"]}...")
 
-        if len(entry["fonts"]) > 1:
-            raise RuntimeError("Multiple fonts not yet supported")
-
-        font = entry["fonts"][0]
-
-        font_data = create_subset_font(font["file"], font["range"])
+        font_data = create_subset_font(entry["font"], entry["range"])
 
         hf.write(f"extern const uint8_t {entry["name"]}[];\n")
         hf.write(f"extern size_t {entry["name"]}_size;\n")
