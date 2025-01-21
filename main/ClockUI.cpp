@@ -287,12 +287,18 @@ void ClockUI::do_update() {
                 .c_str());
     }
 
-    auto outside_temperature_half_rounded = round(_api->get_outside_temperature() * 2) / 2;
+    const auto outside_temperature = _api->get_outside_temperature();
+    const auto outside_temperature_half_rounded = round(fabs(outside_temperature) * 2) / 2;
 
-    auto outside_temperature_rounded = (int)outside_temperature_half_rounded;
-    auto outside_temperature_fraction = (int)(outside_temperature_half_rounded * 10) % 10;
+    const auto outside_temperature_rounded = (int)outside_temperature_half_rounded;
+    const auto outside_temperature_fraction = (int)(outside_temperature_half_rounded * 10) % 10;
 
-    lv_label_set_text(_outside_temp.label, strformat("%d", outside_temperature_rounded).c_str());
+    auto outside_temperature_label = strformat("%d", outside_temperature_rounded);
+    if (outside_temperature < 0) {
+        outside_temperature_label = "-" + outside_temperature_label;
+    }
+
+    lv_label_set_text(_outside_temp.label, outside_temperature_label.c_str());
     lv_label_set_text(_outside_temp.sub_label, strformat(",%d", outside_temperature_fraction).c_str());
     lv_label_set_text(_humidity.label, strformat("%.0f", _api->get_woonkamer_humidity()).c_str());
     lv_label_set_text(_printer.label, strformat("%.0f", _api->get_printer_voortgang()).c_str());
