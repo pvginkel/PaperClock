@@ -185,8 +185,8 @@ void HomeAssistantApi::handleData(esp_mqtt_event_handle_t event) {
         } else if (strcmp(sub_topic, "set/woonkamer_humidity") == 0) {
             _woonkamer_humidity = atof(data.c_str());
             _update_cookie++;
-        } else if (strcmp(sub_topic, "set/printer_vooruitgang") == 0) {
-            _printer_vooruitgang = atof(data.c_str());
+        } else if (strcmp(sub_topic, "set/printer_voortgang") == 0) {
+            _printer_voortgang = atof(data.c_str());
             _update_cookie++;
         }
     }

@@ -35,7 +35,7 @@ class HomeAssistantApi {
     ForecastDay _forecast_days[5]{};
     double _outside_temperature{};
     double _woonkamer_humidity{};
-    double _printer_vooruitgang{};
+    double _printer_voortgang{};
     Callback<bool> _screen_on_changed;
     Callback<HomeAssistantConnectionState> _state_changed;
 
@@ -52,7 +52,7 @@ public:
     const ForecastDay& get_forecast_day(int index) const { return _forecast_days[index]; }
     double get_outside_temperature() { return _outside_temperature; }
     double get_woonkamer_humidity() { return _woonkamer_humidity; }
-    double get_printer_voortgang() { return _printer_vooruitgang; }
+    double get_printer_voortgang() { return _printer_voortgang; }
 
 private:
 #ifndef LV_SIMULATOR
