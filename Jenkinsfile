@@ -18,7 +18,7 @@ withCredentials([
                         url: 'https://github.com/pvginkel/esp-libs.git'
                 }
 
-                dir('ThermostatProxy') {
+                dir('PaperClock') {
                     git branch: 'main',
                         credentialsId: '5f6fbd66-b41c-405f-b107-85ba6fd97f10',
                         url: 'https://github.com/pvginkel/PaperClock.git'
