@@ -4,6 +4,7 @@
 
 #include <chrono>
 
+#include "Application.h"
 #include "mdi-icons.h"
 #include "ttffonts.h"
 
@@ -111,7 +112,7 @@ void ClockUI::do_render(lv_obj_t* parent) {
     _printer = create_stat(stats_cont, 2, 0, 1, false, false, "%", MDI_PRINTER_3D);
 
     _last_update_time = 0;
-    _api_cookie = 0;
+    _update_cookie = 0;
 
     update();
 }
@@ -224,11 +225,11 @@ void ClockUI::do_update() {
     const auto now_time = chrono::system_clock::to_time_t(now);
 
     const auto update = _last_update_time == 0 || (now_time % 60 == 0 && now_time != _last_update_time) ||
-                        (_api_cookie == 0 && _api->get_update_cookie() != 0);
+                        (_update_cookie == 0 && _application->get_update_cookie() != 0);
 
 #if false
 
-    if (_api->get_update_cookie() != _api_cookie) {
+    if (_application->get_update_cookie() != _update_cookie) {
         update = true;
     }
 
@@ -251,25 +252,25 @@ void ClockUI::do_update() {
 
 #ifndef LV_SIMULATOR
 
-    const auto update_cookie = _api->get_update_cookie();
-    if (update_cookie == _api_cookie) {
+    const auto update_cookie = _application->get_update_cookie();
+    if (update_cookie == _update_cookie) {
         return;
     }
 
     ESP_LOGD(TAG, "Received new data, redrawing the screen");
 
-    _api_cookie = update_cookie;
+    _update_cookie = update_cookie;
 
 #endif
 
     auto hour_offset = 0;
     // Show forecast of the next hour if we're over halfway into the current hour forecast.
-    if (local_tm->tm_min >= 30 && local_tm->tm_hour == _api->get_forecast_hour(0).hour) {
+    if (local_tm->tm_min >= 30 && local_tm->tm_hour == _application->get_forecast_hour(0).hour) {
         hour_offset++;
     }
 
     for (auto i = 0; i < 3; i++) {
-        auto& hour_forecast = _api->get_forecast_hour(hour_offset + i);
+        auto& hour_forecast = _application->get_forecast_hour(hour_offset + i);
 
         lv_label_set_text(_forecast_hours[i].icon_label, classify_weather_image(hour_forecast.image));
         lv_label_set_text(_forecast_hours[i].hour_label, strformat("%du", hour_forecast.hour).c_str());
@@ -277,7 +278,7 @@ void ClockUI::do_update() {
     }
 
     for (auto i = 0; i < 5; i++) {
-        auto& day_forecast = _api->get_forecast_day(i);
+        auto& day_forecast = _application->get_forecast_day(i);
 
         lv_label_set_text(_forecast_days[i].icon_label, classify_weather_image(day_forecast.image));
         lv_label_set_text(_forecast_days[i].weekday_label, day_forecast.weekday_code.c_str());
@@ -287,7 +288,7 @@ void ClockUI::do_update() {
                 .c_str());
     }
 
-    const auto outside_temperature = _api->get_outside_temperature();
+    const auto outside_temperature = _application->get_outside_temperature();
     const auto outside_temperature_half_rounded = round(fabs(outside_temperature) * 2) / 2;
 
     const auto outside_temperature_rounded = (int)outside_temperature_half_rounded;
@@ -300,6 +301,6 @@ void ClockUI::do_update() {
 
     lv_label_set_text(_outside_temp.label, outside_temperature_label.c_str());
     lv_label_set_text(_outside_temp.sub_label, strformat(",%d", outside_temperature_fraction).c_str());
-    lv_label_set_text(_humidity.label, strformat("%.0f", _api->get_woonkamer_humidity()).c_str());
-    lv_label_set_text(_printer.label, strformat("%.0f", _api->get_printer_voortgang()).c_str());
+    lv_label_set_text(_humidity.label, strformat("%.0f", _application->get_woonkamer_humidity()).c_str());
+    lv_label_set_text(_printer.label, strformat("%.0f", _application->get_printer_voortgang()).c_str());
 }

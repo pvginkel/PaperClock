@@ -15,6 +15,6 @@ message(STATUS "Firmware version set to: ${PROJECT_VER}")
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 
-project(esp32-paper-clock)
+project(paper_clock)
 
 idf_build_set_property(COMPILE_OPTIONS "-DLV_TINY_TTF_CACHE_GLYPH_CNT=0" APPEND)

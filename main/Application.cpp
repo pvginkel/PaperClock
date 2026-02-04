@@ -9,49 +9,32 @@
 
 LOG_TAG(Application);
 
-Application::Application(Device* device) : _device(device), _network_connection(&_queue) {}
+Application::Application(Device* device) : _device(device) {}
 
-void Application::begin(bool silent) {
-    ESP_LOGI(TAG, "Setting up the log manager");
-
-    _log_manager.begin();
-
-    setup_flash();
-
-    do_begin(silent);
-}
-
-void Application::setup_flash() {
-    ESP_LOGI(TAG, "Setting up flash");
-
-    auto ret = nvs_flash_init();
-    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-        ESP_ERROR_CHECK(nvs_flash_erase());
-        ret = nvs_flash_init();
-    }
-    ESP_ERROR_CHECK(ret);
-}
-
-void Application::do_begin(bool silent) {
+void Application::do_begin() {
     ESP_LOGI(TAG, "Starting UI worker task");
-
-    _silent_startup = silent;
 
     ESP_ERROR_ASSERT(xTaskCreatePinnedToCore([](void* param) { ((Application*)param)->run(); }, "Application::run_task",
                                              8192, this, 1, nullptr, 1));
+
+    get_mqtt_connection().on_connected_changed([this](auto state) {
+        if (state.connected) {
+            state_changed();
+
+            register_mqtt_callbacks();
+        }
+    });
 }
 
 void Application::run() {
     ESP_LOGI(TAG, "Setting up loading UI");
 
-    _loading_ui = new LoadingUI(_silent_startup);
+    _loading_ui = new LoadingUI(is_silent_startup());
 
     _loading_ui->begin();
     _loading_ui->set_title(MSG_STARTING);
     _loading_ui->set_state(LoadingUIState::Loading);
     _loading_ui->render();
-
-    begin_network();
 
     auto last_tick_call = chrono::high_resolution_clock::now();
 
@@ -79,88 +62,19 @@ void Application::run() {
     }
 }
 
-void Application::begin_network() {
-    ESP_LOGI(TAG, "Connecting to WiFi");
-
-    _network_connection.on_state_changed([this](auto state) {
-        if (!_loading_ui) {
-            esp_restart();
-        }
-
-        if (state.connected) {
-            begin_network_available();
-        } else {
-            _loading_ui->set_error(MSG_FAILED_TO_CONNECT);
-            _loading_ui->set_state(LoadingUIState::Error);
-            _loading_ui->render();
-        }
-    });
-
-    _network_connection.begin();
-}
-
-void Application::begin_network_available() {
-    ESP_LOGI(TAG, "Getting device configuration");
-
-    auto err = _configuration.load();
-
-    if (err != ESP_OK) {
-        auto error = strformat(MSG_FAILED_TO_RETRIEVE_CONFIGURATION, _configuration.get_endpoint().c_str());
-
-        _loading_ui->set_error(strdup(error.c_str()));
+void Application::do_network_connection_failed() {
+    if (_loading_ui) {
+        _loading_ui->set_error(MSG_FAILED_TO_CONNECT);
         _loading_ui->set_state(LoadingUIState::Error);
         _loading_ui->render();
-        return;
     }
-
-    _log_manager.set_configuration(_configuration);
-
-    if (_configuration.get_enable_ota()) {
-        _ota_manager.begin();
-    }
-
-    _queue.enqueue([this]() { begin_mqtt(); });
 }
 
-void Application::begin_mqtt() {
-    ESP_LOGI(TAG, "Connecting to MQTT / Home Assistant");
-
-    _api = new HomeAssistantApi(&_queue);
-
-    _api->on_state_changed([this](auto state) {
-        if (!_loading_ui) {
-            esp_restart();
-        }
-
-        if (state.connected) {
-            _queue.enqueue([this]() { begin_after_initialization(); });
-        } else {
-            _loading_ui->set_error(MSG_FAILED_TO_CONNECT);
-            _loading_ui->set_state(LoadingUIState::Error);
-            _loading_ui->render();
-        }
-    });
-
-    _api->begin();
-}
-
-void Application::begin_after_initialization() {
-    // Intialization complete.
-
+void Application::do_ready() {
     delete _loading_ui;
     _loading_ui = nullptr;
 
-    // Log the reset reason.
-    auto reset_reason = esp_reset_reason();
-    ESP_LOGI(TAG, "esp_reset_reason: %s (%d)", esp_reset_reason_to_name(reset_reason), reset_reason);
-
-    begin_ui();
-}
-
-void Application::begin_ui() {
-    ESP_LOGI(TAG, "Connected, showing UI");
-
-    _clock_ui = new ClockUI(_device, _api);
+    _clock_ui = new ClockUI(_device, this);
     _clock_ui->begin();
 
     _shutdown_ui = new ShutdownUI(_device);
@@ -168,19 +82,202 @@ void Application::begin_ui() {
 
     _current_ui = _clock_ui;
     _current_ui->render();
-
-    _api->on_screen_on_changed([this](bool on) {
-        _current_ui = on ? (LvglUI*)_clock_ui : _shutdown_ui;
-        _current_ui->render();
-    });
 }
 
-void Application::process() {
+void Application::do_process() {
     _device->process();
-
-    _queue.process();
 
     if (_current_ui) {
         _current_ui->update();
+    }
+}
+
+void Application::state_changed() {
+    if (!get_mqtt_connection().is_connected()) {
+        return;
+    }
+
+    get_mqtt_connection().send_state();
+}
+
+void Application::parse_hour_forecast(const char* json, ForecastHour& forecast) {
+    auto root = cJSON_Parse(json);
+    if (root == nullptr) {
+        return;
+    }
+
+    forecast.hour = 0;
+    forecast.image = "";
+    forecast.temperature = 0;
+    forecast.wind_speed = 0;
+
+    auto state = cJSON_GetObjectItemCaseSensitive(root, "state");
+    if (cJSON_IsString(state) && (state->valuestring != nullptr)) {
+        forecast.hour = atoi(state->valuestring);
+    }
+
+    auto attributes = cJSON_GetObjectItemCaseSensitive(root, "attributes");
+    if (attributes != nullptr) {
+        auto image = cJSON_GetObjectItemCaseSensitive(attributes, "image");
+        if (cJSON_IsString(image) && image->valuestring != nullptr) {
+            forecast.image = image->valuestring;
+        }
+
+        auto temp = cJSON_GetObjectItemCaseSensitive(attributes, "temp");
+        if (cJSON_IsNumber(temp)) {
+            forecast.temperature = temp->valuedouble;
+        }
+
+        // Get the wind speed
+        cJSON* windbft = cJSON_GetObjectItemCaseSensitive(attributes, "windbft");
+        if (cJSON_IsNumber(windbft)) {
+            forecast.wind_speed = windbft->valueint;
+        }
+    }
+
+    cJSON_Delete(root);
+}
+
+void Application::register_mqtt_callbacks() {
+    get_mqtt_connection().register_callback("screen_on", [this](auto data) {
+        bool is_on = data == "true";
+
+        get_queue().enqueue([this, is_on]() { screen_on_changed(is_on); });
+    });
+
+    get_mqtt_connection().register_callback("forecast_hour_1", [this](auto data) {
+        parse_hour_forecast(data.c_str(), _forecast_hours[0]);
+        _update_cookie++;
+    });
+
+    get_mqtt_connection().register_callback("forecast_hour_2", [this](auto data) {
+        parse_hour_forecast(data.c_str(), _forecast_hours[1]);
+        _update_cookie++;
+    });
+
+    get_mqtt_connection().register_callback("forecast_hour_3", [this](auto data) {
+        parse_hour_forecast(data.c_str(), _forecast_hours[2]);
+        _update_cookie++;
+    });
+
+    get_mqtt_connection().register_callback("forecast_hour_4", [this](auto data) {
+        parse_hour_forecast(data.c_str(), _forecast_hours[3]);
+        _update_cookie++;
+    });
+
+    get_mqtt_connection().register_callback("forecast_day_1", [this](auto data) {
+        parse_day_forecast(data.c_str(), _forecast_days[0]);
+        _update_cookie++;
+    });
+
+    get_mqtt_connection().register_callback("forecast_day_2", [this](auto data) {
+        parse_day_forecast(data.c_str(), _forecast_days[1]);
+        _update_cookie++;
+    });
+
+    get_mqtt_connection().register_callback("forecast_day_3", [this](auto data) {
+        parse_day_forecast(data.c_str(), _forecast_days[2]);
+        _update_cookie++;
+    });
+
+    get_mqtt_connection().register_callback("forecast_day_4", [this](auto data) {
+        parse_day_forecast(data.c_str(), _forecast_days[3]);
+        _update_cookie++;
+    });
+
+    get_mqtt_connection().register_callback("forecast_day_5", [this](auto data) {
+        parse_day_forecast(data.c_str(), _forecast_days[4]);
+        _update_cookie++;
+    });
+
+    get_mqtt_connection().register_callback("outside_temperature", [this](auto data) {
+        _outside_temperature = atof(data.c_str());
+        _update_cookie++;
+    });
+
+    get_mqtt_connection().register_callback("woonkamer_humidity", [this](auto data) {
+        _woonkamer_humidity = atof(data.c_str());
+        _update_cookie++;
+    });
+
+    get_mqtt_connection().register_callback("printer_voortgang", [this](auto data) {
+        _printer_voortgang = atof(data.c_str());
+        _update_cookie++;
+    });
+}
+
+void Application::screen_on_changed(bool is_on) {
+    _current_ui = is_on ? (LvglUI*)_clock_ui : _shutdown_ui;
+    _current_ui->render();
+}
+
+void Application::parse_day_forecast(const char* json, ForecastDay& forecast) {
+    forecast.weekday = 0;
+    forecast.weekday_code = "";
+    forecast.min_temperature = 0;
+    forecast.max_temperature = 0;
+    forecast.percent_rain = 0;
+    forecast.percent_sun = 0;
+    forecast.image = "";
+
+    auto root = cJSON_Parse(json);
+    if (root == nullptr) {
+        return;
+    }
+
+    auto state = cJSON_GetObjectItemCaseSensitive(root, "state");
+    if (cJSON_IsString(state) && state->valuestring != nullptr) {
+        forecast.weekday = atoi(state->valuestring);
+        forecast.weekday_code = get_weekday_code(forecast.weekday);
+    }
+
+    auto attributes = cJSON_GetObjectItemCaseSensitive(root, "attributes");
+    if (attributes != nullptr) {
+        auto image = cJSON_GetObjectItemCaseSensitive(attributes, "image");
+        if (cJSON_IsString(image) && image->valuestring != nullptr) {
+            forecast.image = image->valuestring;
+        }
+
+        auto min_temp = cJSON_GetObjectItemCaseSensitive(attributes, "min_temp");
+        if (cJSON_IsNumber(min_temp)) {
+            forecast.min_temperature = min_temp->valuedouble;
+        }
+
+        auto max_temp = cJSON_GetObjectItemCaseSensitive(attributes, "max_temp");
+        if (cJSON_IsNumber(max_temp)) {
+            forecast.max_temperature = max_temp->valuedouble;
+        }
+
+        auto neersl_perc_dag = cJSON_GetObjectItemCaseSensitive(attributes, "neersl_perc_dag");
+        if (cJSON_IsNumber(neersl_perc_dag)) {
+            forecast.percent_rain = neersl_perc_dag->valuedouble;
+        }
+
+        auto zond_perc_dag = cJSON_GetObjectItemCaseSensitive(attributes, "zond_perc_dag");
+        if (cJSON_IsNumber(zond_perc_dag)) {
+            forecast.percent_sun = zond_perc_dag->valuedouble;
+        }
+    }
+
+    cJSON_Delete(root);
+}
+
+string Application::get_weekday_code(int weekday) {
+    switch (weekday) {
+        case 0:
+            return "zo";
+        case 1:
+            return "ma";
+        case 2:
+            return "di";
+        case 3:
+            return "wo";
+        case 4:
+            return "do";
+        case 5:
+            return "vr";
+        case 6:
+        default:
+            return "za";
     }
 }

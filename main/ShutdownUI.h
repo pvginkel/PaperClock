@@ -1,6 +1,6 @@
 #pragma once
 
-#include "HomeAssistantApi.h"
+#include "Device.h"
 #include "LvglUI.h"
 #include "Queue.h"
 

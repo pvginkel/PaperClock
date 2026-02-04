@@ -1,5 +1,13 @@
 dependencies:
-  idf: ">=4.4"
+  idf: ">=5.3"
   lvgl/lvgl: "~9.2.2"
   it8951-esp32:
     git: https://github.com/pvginkel/it8951-esp32.git
+  esp-network-support:
+    path: ../../esp-libs/esp-network-support
+  esp-mqtt-support:
+    path: ../../esp-libs/esp-mqtt-support
+  esp-support:
+    path: ../../esp-libs/esp-support
+  esp-mdm:
+    path: ../../esp-libs/esp-mdm

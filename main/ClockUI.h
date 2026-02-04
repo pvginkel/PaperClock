@@ -1,8 +1,10 @@
 #pragma once
 
-#include "HomeAssistantApi.h"
+#include "Device.h"
 #include "LvglUI.h"
 #include "Queue.h"
+
+class Application;
 
 class ClockUI : public LvglUI {
     struct ForecastDayIcon {
@@ -31,9 +33,9 @@ class ClockUI : public LvglUI {
     lv_font_t* _font_xs;
     lv_font_t* _font_xs_mdi;
     Device* _device;
-    HomeAssistantApi* _api;
+    Application* _application;
     time_t _last_update_time;
-    int _api_cookie;
+    int _update_cookie;
     lv_obj_t* _clock_label;
     ForecastDayIcon _forecast_days[5];
     ForecastHourIcon _forecast_hours[3];
@@ -42,7 +44,7 @@ class ClockUI : public LvglUI {
     Stat _printer;
 
 public:
-    ClockUI(Device* device, HomeAssistantApi* api) : _device(device), _api(api), _api_cookie(0) {}
+    ClockUI(Device* device, Application* application) : _device(device), _application(application), _update_cookie(0) {}
     ~ClockUI() override;
 
 protected:
