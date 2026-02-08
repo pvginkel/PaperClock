@@ -195,6 +195,11 @@ void Application::register_mqtt_callbacks() {
         _update_cookie++;
     });
 
+    get_mqtt_connection().register_callback("woonkamer_temperature", [this](auto data) {
+        _woonkamer_temperature = atof(data.c_str());
+        _update_cookie++;
+    });
+
     get_mqtt_connection().register_callback("woonkamer_humidity", [this](auto data) {
         _woonkamer_humidity = atof(data.c_str());
         _update_cookie++;

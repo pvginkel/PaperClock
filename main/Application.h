@@ -32,6 +32,7 @@ class Application : public ApplicationBase {
     ForecastHour _forecast_hours[4]{};
     ForecastDay _forecast_days[5]{};
     double _outside_temperature{};
+    double _woonkamer_temperature{};
     double _woonkamer_humidity{};
     double _printer_voortgang{};
 
