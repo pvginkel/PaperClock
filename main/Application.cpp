@@ -102,7 +102,9 @@ void Application::state_changed() {
 
 void Application::parse_hour_forecast(const char* json, ForecastHour& forecast) {
     auto root = cJSON_Parse(json);
-    if (root == nullptr) {
+    if (!root) {
+        auto error = cJSON_GetErrorPtr();
+        ESP_LOGE(TAG, "Failed to parse hour forecast JSON at offset %d: %s", (int)(error - json), json);
         return;
     }
 
@@ -217,6 +219,13 @@ void Application::screen_on_changed(bool is_on) {
 }
 
 void Application::parse_day_forecast(const char* json, ForecastDay& forecast) {
+    auto root = cJSON_Parse(json);
+    if (!root) {
+        auto error = cJSON_GetErrorPtr();
+        ESP_LOGE(TAG, "Failed to parse day forecast JSON at offset %d: %s", (int)(error - json), json);
+        return;
+    }
+
     forecast.weekday = 0;
     forecast.weekday_code = "";
     forecast.min_temperature = 0;
@@ -224,11 +233,6 @@ void Application::parse_day_forecast(const char* json, ForecastDay& forecast) {
     forecast.percent_rain = 0;
     forecast.percent_sun = 0;
     forecast.image = "";
-
-    auto root = cJSON_Parse(json);
-    if (root == nullptr) {
-        return;
-    }
 
     auto state = cJSON_GetObjectItemCaseSensitive(root, "state");
     if (cJSON_IsString(state) && state->valuestring != nullptr) {
