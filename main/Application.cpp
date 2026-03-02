@@ -100,6 +100,80 @@ void Application::state_changed() {
     get_mqtt_connection().send_state();
 }
 
+void Application::register_mqtt_callbacks() {
+    get_mqtt_connection().register_callback("screen_on", [this](auto data) {
+        bool is_on = data == "true";
+
+        ESP_LOGI(TAG, "Received screen on %s", is_on ? "ON" : "OFF");
+
+        get_queue().enqueue([this, is_on]() { screen_on_changed(is_on); });
+    });
+
+    for (int i = 0; i < ARRAY_SIZE(_forecast_hours); i++) {
+        get_mqtt_connection().register_callback(strformat("forecast_hour_%d", i + 1).c_str(), [this, i](auto data) {
+            parse_hour_forecast(data.c_str(), _forecast_hours[i]);
+
+            ESP_LOGI(TAG, "Received hour forecast %d for hour %d image %s temperature %f wind_speed %d", i + 1,
+                     _forecast_hours[i].hour, _forecast_hours[i].image, _forecast_hours[i].temperature,
+                     _forecast_hours[i].wind_speed);
+
+            _update_cookie++;
+        });
+    }
+
+    for (int i = 0; i < ARRAY_SIZE(_forecast_days); i++) {
+        get_mqtt_connection().register_callback(strformat("forecast_day_%d", i + 1).c_str(), [this, i](auto data) {
+            parse_day_forecast(data.c_str(), _forecast_days[i]);
+
+            ESP_LOGI(TAG,
+                     "Received day forecast %d for weekday %d code %s min temperature %f max temperature %f percent "
+                     "rain %f percent sun %f image %s",
+                     i + 1, _forecast_days[i].weekday, _forecast_days[i].weekday_code,
+                     _forecast_days[i].min_temperature, _forecast_days[i].max_temperature,
+                     _forecast_days[i].percent_rain, _forecast_days[i].percent_sun, _forecast_days[i].image);
+
+            _update_cookie++;
+        });
+    }
+
+    get_mqtt_connection().register_callback("outside_temperature", [this](auto data) {
+        _outside_temperature = atof(data.c_str());
+
+        ESP_LOGI(TAG, "Received outside temperature %f", _outside_temperature);
+
+        _update_cookie++;
+    });
+
+    get_mqtt_connection().register_callback("woonkamer_temperature", [this](auto data) {
+        _woonkamer_temperature = atof(data.c_str());
+
+        ESP_LOGI(TAG, "Received woonkamer temperature %f", _woonkamer_temperature);
+
+        _update_cookie++;
+    });
+
+    get_mqtt_connection().register_callback("woonkamer_humidity", [this](auto data) {
+        _woonkamer_humidity = atof(data.c_str());
+
+        ESP_LOGI(TAG, "Received woonkamer humidity %f", _woonkamer_humidity);
+
+        _update_cookie++;
+    });
+
+    get_mqtt_connection().register_callback("printer_voortgang", [this](auto data) {
+        _printer_voortgang = atof(data.c_str());
+
+        ESP_LOGI(TAG, "Received printer voortgang %f", _printer_voortgang);
+
+        _update_cookie++;
+    });
+}
+
+void Application::screen_on_changed(bool is_on) {
+    _current_ui = is_on ? (LvglUI*)_clock_ui : _shutdown_ui;
+    _current_ui->render();
+}
+
 void Application::parse_hour_forecast(const char* json, ForecastHour& forecast) {
     auto root = cJSON_Parse(json);
     if (!root) {
@@ -131,91 +205,13 @@ void Application::parse_hour_forecast(const char* json, ForecastHour& forecast) 
         }
 
         // Get the wind speed
-        cJSON* windbft = cJSON_GetObjectItemCaseSensitive(attributes, "windbft");
+        auto windbft = cJSON_GetObjectItemCaseSensitive(attributes, "windbft");
         if (cJSON_IsNumber(windbft)) {
             forecast.wind_speed = windbft->valueint;
         }
     }
 
     cJSON_Delete(root);
-}
-
-void Application::register_mqtt_callbacks() {
-    get_mqtt_connection().register_callback("screen_on", [this](auto data) {
-        bool is_on = data == "true";
-
-        get_queue().enqueue([this, is_on]() { screen_on_changed(is_on); });
-    });
-
-    get_mqtt_connection().register_callback("forecast_hour_1", [this](auto data) {
-        parse_hour_forecast(data.c_str(), _forecast_hours[0]);
-        _update_cookie++;
-    });
-
-    get_mqtt_connection().register_callback("forecast_hour_2", [this](auto data) {
-        parse_hour_forecast(data.c_str(), _forecast_hours[1]);
-        _update_cookie++;
-    });
-
-    get_mqtt_connection().register_callback("forecast_hour_3", [this](auto data) {
-        parse_hour_forecast(data.c_str(), _forecast_hours[2]);
-        _update_cookie++;
-    });
-
-    get_mqtt_connection().register_callback("forecast_hour_4", [this](auto data) {
-        parse_hour_forecast(data.c_str(), _forecast_hours[3]);
-        _update_cookie++;
-    });
-
-    get_mqtt_connection().register_callback("forecast_day_1", [this](auto data) {
-        parse_day_forecast(data.c_str(), _forecast_days[0]);
-        _update_cookie++;
-    });
-
-    get_mqtt_connection().register_callback("forecast_day_2", [this](auto data) {
-        parse_day_forecast(data.c_str(), _forecast_days[1]);
-        _update_cookie++;
-    });
-
-    get_mqtt_connection().register_callback("forecast_day_3", [this](auto data) {
-        parse_day_forecast(data.c_str(), _forecast_days[2]);
-        _update_cookie++;
-    });
-
-    get_mqtt_connection().register_callback("forecast_day_4", [this](auto data) {
-        parse_day_forecast(data.c_str(), _forecast_days[3]);
-        _update_cookie++;
-    });
-
-    get_mqtt_connection().register_callback("forecast_day_5", [this](auto data) {
-        parse_day_forecast(data.c_str(), _forecast_days[4]);
-        _update_cookie++;
-    });
-
-    get_mqtt_connection().register_callback("outside_temperature", [this](auto data) {
-        _outside_temperature = atof(data.c_str());
-        _update_cookie++;
-    });
-
-    get_mqtt_connection().register_callback("woonkamer_temperature", [this](auto data) {
-        _woonkamer_temperature = atof(data.c_str());
-        _update_cookie++;
-    });
-
-    get_mqtt_connection().register_callback("woonkamer_humidity", [this](auto data) {
-        _woonkamer_humidity = atof(data.c_str());
-        _update_cookie++;
-    });
-
-    get_mqtt_connection().register_callback("printer_voortgang", [this](auto data) {
-        _printer_voortgang = atof(data.c_str());
-        _update_cookie++;
-    });
-}
-
-void Application::screen_on_changed(bool is_on) {
-    _current_ui = is_on ? (LvglUI*)_clock_ui : _shutdown_ui;
-    _current_ui->render();
 }
 
 void Application::parse_day_forecast(const char* json, ForecastDay& forecast) {

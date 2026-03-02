@@ -8,6 +8,8 @@
 
 #define esp_get_millis() uint32_t(esp_timer_get_time() / 1000ull)
 
+#define ARRAY_SIZE(arr) (sizeof(arr) / sizeof(arr[0]))
+
 string strformat(const char* fmt, ...);
 int getisoweek(tm& time_info);
 int get_dst_offset(time_t time);
