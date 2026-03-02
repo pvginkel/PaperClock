@@ -182,29 +182,29 @@ ClockUI::Stat ClockUI::create_stat(lv_obj_t* cont, int col, int row, int row_spa
     const auto font = large ? _font_l : _font_m;
     const auto font_mdi = large ? _font_l_mdi : _font_m_mdi;
 
-    const auto stat_cont = lv_obj_create(cont);
-    reset_layout_container_styles(stat_cont);
-    lv_obj_set_style_pad_hor(stat_cont, lv_dpx(30), LV_PART_MAIN);
-    lv_obj_set_style_pad_ver(stat_cont, lv_dpx(6), LV_PART_MAIN);
+    Stat result;
+
+    result.cont = lv_obj_create(cont);
+    reset_layout_container_styles(result.cont);
+    lv_obj_set_style_pad_hor(result.cont, lv_dpx(30), LV_PART_MAIN);
+    lv_obj_set_style_pad_ver(result.cont, lv_dpx(6), LV_PART_MAIN);
     static int32_t stat_cont_col_desc[] = {LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_CONTENT, LV_GRID_CONTENT,
                                            LV_GRID_TEMPLATE_LAST};
     static int32_t stat_cont_row_desc[] = {LV_GRID_CONTENT, LV_GRID_TEMPLATE_LAST};
-    lv_obj_set_grid_dsc_array(stat_cont, stat_cont_col_desc, stat_cont_row_desc);
-    lv_obj_set_grid_cell(stat_cont, LV_GRID_ALIGN_START, col, 1, LV_GRID_ALIGN_CENTER, row, row_span);
+    lv_obj_set_grid_dsc_array(result.cont, stat_cont_col_desc, stat_cont_row_desc);
+    lv_obj_set_grid_cell(result.cont, LV_GRID_ALIGN_START, col, 1, LV_GRID_ALIGN_CENTER, row, row_span);
 
-    Stat result;
-
-    const auto icon_label = lv_label_create(stat_cont);
+    const auto icon_label = lv_label_create(result.cont);
     lv_obj_set_grid_cell(icon_label, LV_GRID_ALIGN_START, 0, 1, LV_GRID_ALIGN_CENTER, 0, 1);
     lv_label_set_text(icon_label, icon);
     lv_obj_set_style_text_font(icon_label, font_mdi, LV_PART_MAIN);
 
-    result.label = lv_label_create(stat_cont);
+    result.label = lv_label_create(result.cont);
     lv_obj_set_grid_cell(result.label, LV_GRID_ALIGN_START, 1, 1, LV_GRID_ALIGN_CENTER, 0, 1);
     lv_obj_set_style_text_font(result.label, font, LV_PART_MAIN);
 
     if (sub_label) {
-        result.sub_label = lv_label_create(stat_cont);
+        result.sub_label = lv_label_create(result.cont);
         lv_obj_set_grid_cell(result.sub_label, LV_GRID_ALIGN_START, 2, 1, LV_GRID_ALIGN_END, 0, 1);
         lv_obj_set_style_text_font(result.sub_label, _font_s, LV_PART_MAIN);
         lv_obj_set_style_margin_bottom(result.sub_label, lv_dpx(23), LV_PART_MAIN);
@@ -212,7 +212,7 @@ ClockUI::Stat ClockUI::create_stat(lv_obj_t* cont, int col, int row, int row_spa
         result.sub_label = nullptr;
     }
 
-    const auto unit_label = lv_label_create(stat_cont);
+    const auto unit_label = lv_label_create(result.cont);
     lv_obj_set_grid_cell(unit_label, LV_GRID_ALIGN_START, 3, 1, LV_GRID_ALIGN_CENTER, 0, 1);
     lv_label_set_text(unit_label, unit);
     lv_obj_set_style_text_font(unit_label, font, LV_PART_MAIN);
@@ -302,5 +302,7 @@ void ClockUI::do_update() {
     lv_label_set_text(_outside_temp.label, outside_temperature_label.c_str());
     lv_label_set_text(_outside_temp.sub_label, strformat(",%d", outside_temperature_fraction).c_str());
     lv_label_set_text(_humidity.label, strformat("%.0f", _application->get_woonkamer_humidity()).c_str());
+
+    lv_obj_set_visibility(_printer.cont, _application->get_printer_voortgang() != 0);
     lv_label_set_text(_printer.label, strformat("%.0f", _application->get_printer_voortgang()).c_str());
 }

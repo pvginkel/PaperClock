@@ -20,6 +20,7 @@ class ClockUI : public LvglUI {
     };
 
     struct Stat {
+        lv_obj_t* cont;
         lv_obj_t* label;
         lv_obj_t* sub_label;
     };

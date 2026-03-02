@@ -38,3 +38,14 @@ void lv_obj_set_bounds(lv_obj_t* obj, int32_t x, int32_t y, int32_t width, int32
 
     lv_obj_set_y(obj, y - height / 2);
 }
+
+void lv_obj_set_visibility(lv_obj_t* obj, bool visible) {
+    const auto is_visible = !lv_obj_has_flag(obj, LV_OBJ_FLAG_HIDDEN);
+    if (visible != is_visible) {
+        if (visible) {
+            lv_obj_add_flag(obj, LV_OBJ_FLAG_HIDDEN);
+        } else {
+            lv_obj_remove_flag(obj, LV_OBJ_FLAG_HIDDEN);
+        }
+    }
+}
