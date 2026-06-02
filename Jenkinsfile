@@ -36,6 +36,7 @@ withVault([vaultSecrets: [
                     }
                 }
             }
+
             stage('Deploy paper clock') {
                 dir('PaperClock') {
                     container('idf') {
