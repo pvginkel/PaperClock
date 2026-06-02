@@ -11,18 +11,20 @@ withCredentials([
         ])
     ]) {
         node(POD_LABEL) {
-            stage('Build paper clock') {
+            stage('Cloning repo') {
+                dir('PaperClock') {
+                    checkout scm
+                }
+
                 dir('esp-libs') {
-                    git branch: 'main',
+                     git branch: 'main',
                         credentialsId: '5f6fbd66-b41c-405f-b107-85ba6fd97f10',
                         url: 'https://github.com/pvginkel/esp-libs.git'
                 }
+            }
 
+            stage('Build paper clock') {
                 dir('PaperClock') {
-                    git branch: 'main',
-                        credentialsId: '5f6fbd66-b41c-405f-b107-85ba6fd97f10',
-                        url: 'https://github.com/pvginkel/PaperClock.git'
-                        
                     container('idf') {
                         // Necessary because the IDF container doesn't have support
                         // for setting the uid/gid.
