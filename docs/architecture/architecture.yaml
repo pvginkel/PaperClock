@@ -1,0 +1,49 @@
+schemaVersion: "0.1"
+producer: paper-clock
+
+# Paper Clock — ESP32-S3 IT8951 e-paper clock showing weather forecast, room
+# temperature/humidity and 3D-printer progress. All display data arrives over
+# MQTT topics (no device-specific HTTP backend).
+#
+# This repo introduces the FIRMWARE, not the physical device (registered in IoT
+# Support, generated as a device: instance there). Universal esp-mdm platform
+# edges only — the functional data also rides the MQTT broker. NVS-provisioned
+# addresses → no boundBy.
+
+systemSoftware:
+  - id: ss:paper-clock,1304162f-51fc-4279-9aff-7942d7d800e7
+    label: Paper Clock firmware
+    summary: >-
+      ESP-IDF firmware for an IT8951 e-paper clock (ESP32-S3) that renders weather
+      forecast, room climate and 3D-printer progress received over MQTT; managed
+      over the air by IoT Support.
+    introduced: 2024-03-29
+    lifecycle: active
+    stereotype: SoftwareProduct
+    sourceRepository: git:pvginkel/PaperClock
+    stats:
+      mcu: esp32-s3
+      display: IT8951 e-paper
+
+relations:
+  - id: rel:paper-clock-consumes-iotsupport
+    source: ss:paper-clock,1304162f-51fc-4279-9aff-7942d7d800e7
+    target: svc:iotsupport-api,b7c5b5ba-36eb-47b8-bf7e-5c50fa1a3656
+    type: Association
+  - id: rel:paper-clock-consumes-pub-sub
+    source: ss:paper-clock,1304162f-51fc-4279-9aff-7942d7d800e7
+    target: cap:pub-sub-broker
+    type: Association
+  - id: rel:paper-clock-consumes-iam
+    source: ss:paper-clock,1304162f-51fc-4279-9aff-7942d7d800e7
+    target: cap:iam
+    type: Association
+
+  # ── Home Assistant (over MQTT): PaperClock subscribes to the weather/printer/
+  # climate topics that a custom Home Assistant AppDaemon script publishes. The
+  # AppDaemon script is an internal HA automation (not a modeled element); the
+  # dependency is on HA's MQTT surface. Topic convention hardcoded → no boundBy. ──
+  - id: rel:paper-clock-ha-mqtt
+    source: ss:paper-clock,1304162f-51fc-4279-9aff-7942d7d800e7
+    target: svc:home-assistant-mqtt,23572189-9185-4a6d-a073-2b2820578e11
+    type: Association

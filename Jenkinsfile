@@ -1,9 +1,11 @@
 library('JenkinsPipelineUtils') _
 
-withCredentials([
-    string(credentialsId: 'IOTSUPPORT_CLIENT_ID', variable: 'IOTSUPPORT_CLIENT_ID'),
-    string(credentialsId: 'IOTSUPPORT_CLIENT_SECRET', variable: 'IOTSUPPORT_CLIENT_SECRET'),
-]) {
+withVault([vaultSecrets: [
+    [path: 'kv/jenkins/iotsupport-pipeline-oidc', engineVersion: 2, secretValues: [
+        [envVar: 'IOTSUPPORT_CLIENT_ID', vaultKey: 'client_id'],
+        [envVar: 'IOTSUPPORT_CLIENT_SECRET', vaultKey: 'client_secret'],
+    ]],
+]]) {
     podTemplate(inheritFrom: 'jenkins-agent-large', containers: [
         containerTemplate(name: 'idf', image: 'espressif/idf:v5.5.2', command: 'sleep', args: 'infinity', envVars: [
             containerEnvVar(key: 'IOTSUPPORT_CLIENT_ID', value: '$IOTSUPPORT_CLIENT_ID'),
