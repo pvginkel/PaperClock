@@ -47,3 +47,10 @@ relations:
     source: ss:paper-clock,1304162f-51fc-4279-9aff-7942d7d800e7
     target: svc:home-assistant-mqtt,23572189-9185-4a6d-a073-2b2820578e11
     type: Association
+
+  # Realizes the IoT-device capability — the selection axis for the IoT view
+  # (in-house ESP32 firmware, managed by IoTSupport, integrated via MQTT discovery).
+  - id: rel:paper-clock-realizes-iot-device
+    source: ss:paper-clock,1304162f-51fc-4279-9aff-7942d7d800e7
+    target: cap:iot-device
+    type: Realization
