@@ -1,19 +1,15 @@
 {
   "folders": [
     {
-      "name": "PaperClock",
       "path": ".",
     },
     {
-      "name": "esp-support",
       "path": "../esp-libs/esp-support",
     },
     {
-      "name": "esp-network-support",
       "path": "../esp-libs/esp-network-support",
     },
     {
-      "name": "esp-mqtt-support",
       "path": "../esp-libs/esp-mqtt-support",
     },
     {
