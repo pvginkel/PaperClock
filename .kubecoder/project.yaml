@@ -1,0 +1,28 @@
+projects:
+  root:
+    description: >-
+      PaperClock — ESP32-S3 e-paper clock firmware (ESP-IDF), built against the
+      shared components in ../esp-libs.
+
+    # The firmware build pipeline. This repo also carries Jenkinsfile.architecture,
+    # built by the separate Jenkins job AaC/PaperClock (the architecture-as-code
+    # producer); `jenkins:` takes one name and this is the main build.
+    jenkins: Firmware/PaperClock
+
+    # No setup: the toolchain lives in the esp-idf sidecar, ../esp-libs is checked
+    # out by the environment, and `idf.py build` resolves and downloads the managed
+    # components into managed_components/ on the first build.
+
+    # What CI runs (Jenkinsfile: `/opt/esp/entrypoint.sh idf.py build`). The sidecar
+    # applies that wrapper to every command itself, so it is not spelled here.
+    build: cexec esp-idf idf.py build
+
+    # No test: the repo has no test suite. Firmware behaviour is verified on the
+    # device, and CI has no test stage either — declaring nothing is the decision.
+
+    # The architecture-as-code artifact validator, exactly as Jenkinsfile.architecture
+    # runs it. Stdlib-only Python, so it runs in the dev container rather than a
+    # sidecar. NOTE: it POSTs to https://architecture.webathome.org/api/validate, so
+    # this gate needs outbound HTTPS — it exits 2 (not 1) when the service is
+    # unreachable, which is a transport failure rather than an invalid artifact.
+    lint: ./scripts/arch-validate.py docs/architecture/*.yaml

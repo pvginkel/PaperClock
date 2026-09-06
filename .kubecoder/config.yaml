@@ -1,0 +1,35 @@
+# The KubeCoder environment for PaperClock — ESP32-S3 e-paper clock firmware.
+
+repos:
+  # The shared ESP-IDF component library. The top-level CMakeLists.txt reads
+  # ../esp-libs/<component>/sdkconfig.defaults and main/idf_component.yml declares
+  # ../../esp-libs/<component> path dependencies, so the checkout has to sit beside
+  # this repo — the same layout the Jenkinsfile arranges by cloning esp-libs next to
+  # PaperClock. Without it the build stops at CMake configure with a missing
+  # component path. Shared and read-only: nothing here writes into it.
+  - url: https://github.com/pvginkel/esp-libs
+    shared: true
+
+capabilities:
+  # Work here pushes to GitHub.
+  github: rw
+
+tools:
+  # ESP-IDF 5.5.3: idf.py with the Xtensa and RISC-V toolchains. The sidecar runs
+  # every command through the image's activation wrapper (/opt/esp/entrypoint.sh),
+  # so the verb is a bare `cexec esp-idf idf.py build` — never the CI spelling that
+  # names the wrapper. Its ccache overlay is declared on the catalog entry.
+  # Side effect worth knowing: every command in this sidecar prints a Python-detection
+  # banner on stdout and an activation block on stderr before its own output, so
+  # filter the stdout of anything you parse.
+  - use: esp-idf
+
+# No services: the firmware talks to no local backing store.
+# No imageBuilder: this repo ships a firmware binary, not a container image.
+# No secrets: the deploy step (scripts/upload.sh, IoTSupport OIDC) is CI's and a
+# hand step from a workstation, out of scope for this environment.
+# No ports: nothing here listens.
+
+setup:
+  # esp-libs carries no project.yaml of its own, so there is nothing to set up in it.
+  - kc project setup
