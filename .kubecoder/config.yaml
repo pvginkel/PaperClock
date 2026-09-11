@@ -29,7 +29,3 @@ tools:
 # No secrets: the deploy step (scripts/upload.sh, IoTSupport OIDC) is CI's and a
 # hand step from a workstation, out of scope for this environment.
 # No ports: nothing here listens.
-
-setup:
-  # esp-libs carries no project.yaml of its own, so there is nothing to set up in it.
-  - kc project setup
