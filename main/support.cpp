@@ -189,8 +189,6 @@ int get_dst_offset(time_t time) {
 
 #else
 
-int get_dst_offset(time_t time) {
-    return 0;
-}
+int get_dst_offset(time_t time) { return 0; }
 
 #endif
