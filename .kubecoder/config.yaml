@@ -23,6 +23,8 @@ tools:
   # banner on stdout and an activation block on stderr before its own output, so
   # filter the stdout of anything you parse.
   - use: esp-idf
+  # Native C/C++ toolchain: provides clang-format for the lint gate.
+  - use: native
 
 # No services: the firmware talks to no local backing store.
 # No imageBuilder: this repo ships a firmware binary, not a container image.
