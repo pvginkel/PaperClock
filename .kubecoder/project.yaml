@@ -21,12 +21,12 @@ projects:
     # device, and CI has no test stage either — declaring nothing is the decision.
 
     # The architecture-as-code artifact validator, exactly as Jenkinsfile.architecture
-    # runs it. Stdlib-only Python, so it runs in the dev container rather than a
-    # sidecar. NOTE: it POSTs to https://architecture.webathome.org/api/validate, so
-    # this gate needs outbound HTTPS — it exits 2 (not 1) when the service is
-    # unreachable, which is a transport failure rather than an invalid artifact.
+    # runs it, from the aac-tools toolchain. NOTE: it POSTs to
+    # https://architecture.webathome.org/api/validate, so this gate needs outbound
+    # HTTPS — it exits 2 (not 1) when the service is unreachable, which is a
+    # transport failure rather than an invalid artifact.
     lint:
-      - ./scripts/arch-validate.py docs/architecture/*.yaml
+      - cexec aac-tools arch-validate docs/architecture/*.yaml
       # clang-format over main/ with main/.clang-format. ttffonts.c/.h are skipped:
       # tools/generate-fonts.py writes them, so they stay as the generator emits them.
       - cexec native sh -c 'find main \( -name "*.c" -o -name "*.cpp" -o -name "*.h" -o -name "*.hpp" \) ! -path main/ttffonts.c ! -path main/ttffonts.h -print0 | xargs -0 clang-format --dry-run --Werror'

@@ -25,6 +25,8 @@ tools:
   - use: esp-idf
   # Native C/C++ toolchain: provides clang-format for the lint gate.
   - use: native
+  # arch-validate, the architecture artifact's lint gate.
+  - use: aac-tools
 
 # No services: the firmware talks to no local backing store.
 # No imageBuilder: this repo ships a firmware binary, not a container image.
