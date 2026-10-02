@@ -13,7 +13,7 @@ projects:
     # out by the environment, and `idf.py build` resolves and downloads the managed
     # components into managed_components/ on the first build.
 
-    # What CI runs (Jenkinsfile: `/opt/esp/entrypoint.sh idf.py build`). The sidecar
+    # What CI runs (espFirmware.build: `/opt/esp/entrypoint.sh idf.py build`). The sidecar
     # applies that wrapper to every command itself, so it is not spelled here.
     build: cexec esp-idf idf.py build
 
